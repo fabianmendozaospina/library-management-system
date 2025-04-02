@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
-namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
+namespace LibraryManagementSystem.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
@@ -29,15 +29,13 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -45,7 +43,6 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -123,16 +120,7 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    // Assign the "Reader" role to the new user.
-                    if (!await _roleManager.RoleExistsAsync("Reader"))
-                    {
-                        await _roleManager.CreateAsync(new IdentityRole("Reader"));
-                    }
-
-                    // Add the user to the rol "Reader".
-                    await _userManager.AddToRoleAsync(user, "Reader");
-
-                    _logger.LogInformation("Reader created a new account with password.");
+                    _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
