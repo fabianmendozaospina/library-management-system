@@ -35,10 +35,11 @@ namespace LibraryManagementSystem.DAL.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime>("BirthDate")
+                    b.Property<DateTime?>("BirthDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateOfDeath")
+                    b.Property<DateTime?>("DateOfDeath")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
@@ -53,7 +54,12 @@ namespace LibraryManagementSystem.DAL.Migrations
 
                     b.HasKey("AuthorId");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Author_BirthDate", "BirthDate <= DATEADD(YEAR, -5, GETDATE())");
+
+                            t.HasCheckConstraint("CK_Author_DateOfDeath", "DateOfDeath IS NULL OR DateOfDeath <= GETDATE()");
+                        });
                 });
 
             modelBuilder.Entity("LibraryManagementSystem.Model.Book", b =>
@@ -507,7 +513,7 @@ namespace LibraryManagementSystem.DAL.Migrations
                     b.HasOne("LibraryManagementSystem.Model.Subject", "Subject")
                         .WithMany("Books")
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Subject");
@@ -518,13 +524,13 @@ namespace LibraryManagementSystem.DAL.Migrations
                     b.HasOne("LibraryManagementSystem.Model.Author", "Author")
                         .WithMany("BookAuthors")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LibraryManagementSystem.Model.Book", "Book")
                         .WithMany("BookAuthors")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Author");
@@ -556,7 +562,7 @@ namespace LibraryManagementSystem.DAL.Migrations
                     b.HasOne("LibraryManagementSystem.Model.Reader", "Reader")
                         .WithMany("Loans")
                         .HasForeignKey("ReaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Reader");
@@ -567,13 +573,13 @@ namespace LibraryManagementSystem.DAL.Migrations
                     b.HasOne("LibraryManagementSystem.Model.Book", "Book")
                         .WithMany("LoanDetails")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LibraryManagementSystem.Model.Loan", "Loan")
                         .WithMany("LoanDetails")
                         .HasForeignKey("LoanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Book");
