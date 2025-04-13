@@ -2,12 +2,15 @@
 @model Book
 
 @{
-    ViewData["Title"] = "Add New Book";
+    ViewData["Title"] = "Edit Book";
+    int counter = 0;
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="Edit">
+    <input type="hidden" asp-for="BookId" />
+
     <div class="mb-3">
         <label asp-for="Name" class="form-label">Name</label>
         <input asp-for="Name" class="form-control" maxlength="50" required />
@@ -52,6 +55,7 @@
             {
                 for (int i = 0; i < Model.Editions.Count; i++)
                 {
+                    counter++;
                     <tr>
                         <td>
                             <select asp-for="Editions[i].EditorialId" class="form-select" asp-items="@(new SelectList(ViewBag.Editorials, "EditorialId", "Name"))">
@@ -71,8 +75,18 @@
             }
         </tbody>
     </table>
+    @if (counter == 0)
+    {
+        <table class="table table-striped" id="noRows">
+            <tbody>
+                <tr>
+                    <td colspan="5" class="text-center">There are no registered editions.</td>
+                </tr>
+            </tbody>
+        </table>
+    }
 
-    <button type="submit" class="btn btn-success">Save</button>
+    <button type="submit" class="btn btn-success">Save Changes</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
 
@@ -92,6 +106,12 @@
 
         function addEdition() {
             var index = document.querySelectorAll('#editionsTableBody tr').length;
+            var noRows = document.querySelector('#noRows');
+
+            if (noRows) {
+                noRows.remove();
+            }
+
             var newRow = `<tr>
                 <td>
                     <select name="Editions[${index}].EditorialId" class="form-select"

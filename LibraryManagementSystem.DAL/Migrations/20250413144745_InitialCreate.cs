@@ -429,9 +429,10 @@ namespace LibraryManagementSystem.DAL.Migrations
                 column: "SubjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Editions_BookId",
+                name: "IX_Editions_BookId_EditorialId_EditionDate",
                 table: "Editions",
-                column: "BookId");
+                columns: new[] { "BookId", "EditorialId", "EditionDate" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Editions_EditorialId",

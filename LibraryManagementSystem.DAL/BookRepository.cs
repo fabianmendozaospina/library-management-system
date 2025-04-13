@@ -19,6 +19,7 @@ namespace LibraryManagementSystem.DAL
                 .Include(s => s.Subject)
                 .Include(ba => ba.BookAuthors)
                 .Include(e => e.Editions)
+                    .ThenInclude(e => e.Editorial)
                 .Include(r => r.Ratings)
                 .Include(ld => ld.LoanDetails)
                 .ToListAsync();
@@ -30,6 +31,7 @@ namespace LibraryManagementSystem.DAL
                 .Include(s => s.Subject)
                 .Include(ba => ba.BookAuthors)
                 .Include(e => e.Editions)
+                    .ThenInclude(e => e.Editorial)
                 .Include(r => r.Ratings)
                 .Include(ld => ld.LoanDetails)
                 .SingleOrDefaultAsync(r => r.BookId == id);
@@ -45,7 +47,9 @@ namespace LibraryManagementSystem.DAL
 
         public async Task UpdateBook(Book book)
         {
-            Book existingBook = await _context.Books.FirstOrDefaultAsync(r => r.BookId == book.BookId);
+            Book? existingBook = await _context.Books
+                                        .Include(e => e.Editions)
+                                        .FirstOrDefaultAsync(r => r.BookId == book.BookId);
 
             if (existingBook == null)
             {
@@ -57,6 +61,9 @@ namespace LibraryManagementSystem.DAL
             existingBook.SubjectId = book.SubjectId;
             existingBook.Synopsis = book.Synopsis;
             existingBook.Photo = book.Photo;
+
+            if (existingBook.Editions != null) 
+                _context.Editions.RemoveRange(existingBook.Editions);
             existingBook.Editions = book.Editions;
 
             await _context.SaveChangesAsync();

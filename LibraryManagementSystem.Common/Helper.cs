@@ -8,7 +8,7 @@ namespace LibraryManagementSystem.Common
         public static (string, string) GetMessage(string className, string generalMessage, Exception? innerException)
         {
             bool hasInnerMessage = innerException != null && innerException.Message != null;
-            string message = hasInnerMessage ? innerException?.Message??"" : generalMessage;
+            string message = hasInnerMessage ? innerException?.Message ?? "" : generalMessage;
 
             if (!hasInnerMessage)
             {
@@ -31,9 +31,13 @@ namespace LibraryManagementSystem.Common
                     case 547:
                         clientMessage = $"The value entered into the {field} field is invalid.";
                         break;
+
+                    case 2601:
+                        clientMessage = $"Duplicated data not valid ({GetDuplicatedKey(message)}).";
+                        break;
                 }
 
-                if (GetTableName(message) != GetMainTableName(className))
+                if (field != "" && GetTableName(message) != GetMainTableName(className))
                 {
                     // When the validation is in a secundary table,
                     // don't show the message in an specific field.
@@ -83,6 +87,18 @@ namespace LibraryManagementSystem.Common
             }
 
             return className;
+        }
+
+        private static string GetDuplicatedKey(string message)
+        {
+            Match match = Regex.Match(message, @"The duplicate key value is \((.*?)\)");
+
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+
+            return "";
         }
     }
 }

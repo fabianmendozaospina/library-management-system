@@ -145,9 +145,10 @@ namespace LibraryManagementSystem.DAL.Migrations
 
                     b.HasKey("EditionId");
 
-                    b.HasIndex("BookId");
-
                     b.HasIndex("EditorialId");
+
+                    b.HasIndex("BookId", "EditorialId", "EditionDate")
+                        .IsUnique();
 
                     b.ToTable("Editions");
                 });

@@ -66,7 +66,6 @@ namespace LibraryManagementSystem.Controllers
                 else
                     TempData["Error"] = result.Message;
 
-                SetViewBag();
                 return View(book);
             }
 
