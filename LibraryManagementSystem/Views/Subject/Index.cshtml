@@ -3,16 +3,18 @@
     ViewData["Title"] = "Subjects";
 }
 
-<h2 class="my-4">Subjects</h2>
+<h2>Subjects</h2>
 
-<a href="@Url.Action("Create")" class="btn btn-primary mb-3">Create New Subject</a>
+<p>
+	<a href="@Url.Action("Create")" class="btn btn-primary">Add New Subject</a>
+</p>
 
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
+<table class="table table-striped">
+    <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th style="width: 180px">Actions</th>
+            <th>Subject ID</th>
+            <th>Subject Name</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
