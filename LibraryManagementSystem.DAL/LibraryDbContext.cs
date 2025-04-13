@@ -196,18 +196,26 @@ namespace LibraryManagementSystem.DAL
                       .Property(r => r.ReaderId)
                       .IsRequired();
 
+            // Check constraints.
+            modelBuilder.Entity<Author>()
+                .ToTable("Authors", tableBuilder =>
+                {
+                    tableBuilder.HasCheckConstraint("CK_Author_BirthDate", "BirthDate <= DATEADD(YEAR, -5, GETDATE())");
+                    tableBuilder.HasCheckConstraint("CK_Author_DateOfDeath", "DateOfDeath IS NULL OR DateOfDeath <= GETDATE()");
+                });
+
             // Relationships.
             modelBuilder.Entity<BookAuthor>()
                 .HasOne(ba => ba.Author)
                 .WithMany(a => a.BookAuthors)
                 .HasForeignKey(ba => ba.AuthorId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<BookAuthor>()
                 .HasOne(ba => ba.Book)
                 .WithMany(b => b.BookAuthors)
                 .HasForeignKey(ba => ba.BookId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Edition>()
                 .HasOne(e => e.Book)
@@ -225,19 +233,19 @@ namespace LibraryManagementSystem.DAL
                 .HasOne(b => b.Subject)
                 .WithMany(s => s.Books)
                 .HasForeignKey(b => b.SubjectId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<LoanDetail>()
                 .HasOne(ld => ld.Book)
                 .WithMany(b => b.LoanDetails)
                 .HasForeignKey(ld => ld.BookId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<LoanDetail>()
                 .HasOne(ld => ld.Loan)
                 .WithMany(l => l.LoanDetails)
                 .HasForeignKey(ld => ld.LoanId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Rating>()
                 .HasOne(r => r.Reader)
@@ -255,7 +263,7 @@ namespace LibraryManagementSystem.DAL
                 .HasOne(l => l.Reader)
                 .WithMany(r => r.Loans)
                 .HasForeignKey(l => l.ReaderId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

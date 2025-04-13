@@ -20,3 +20,12 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.dropdown-menu .dropdown-item {
+    color: black !important;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: paleturquoise !important;
+    color: black !important;
+}
