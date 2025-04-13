@@ -70,6 +70,10 @@ namespace LibraryManagementSystem.DAL
                 .HasIndex(r => r.CoreId)
                 .IsUnique();
 
+            modelBuilder.Entity<Edition>()
+                .HasIndex(e => new { e.BookId, e.EditorialId, e.EditionDate })
+                .IsUnique();
+
             modelBuilder.Entity<Editorial>()
                 .HasIndex(e => e.Name)
                 .IsUnique();
