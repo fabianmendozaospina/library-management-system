@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryManagementSystem.DAL.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-<<<<<<<< HEAD:LibraryManagementSystem.DAL/Migrations/20250413015507_initialcreate.Designer.cs
-    [Migration("20250413015507_initialcreate")]
+    [Migration("20250413175500_initialcreate")]
     partial class initialcreate
-========
-    [Migration("20250413144745_InitialCreate")]
-    partial class InitialCreate
->>>>>>>> main:LibraryManagementSystem.DAL/Migrations/20250413144745_InitialCreate.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
