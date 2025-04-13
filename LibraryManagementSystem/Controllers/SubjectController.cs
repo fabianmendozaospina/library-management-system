@@ -7,55 +7,49 @@ using Microsoft.AspNetCore.Mvc;
 namespace LibraryManagementSystem.Controllers
 {
     [Authorize(Roles = "Librarian")]
-    public class BookController : Controller
+    public class SubjectController : Controller
     {
-        private readonly BookService _bookService;
         private readonly SubjectService _subjectService;
 
-        public BookController(BookService bookService, SubjectService subjectService)
+        public SubjectController(SubjectService subjectService)
         {
-            _bookService = bookService;
             _subjectService = subjectService;
         }
 
         public async Task<IActionResult> Index()
         {
-            List<Book> books = await _bookService.GetAllBooks();
+            List<Subject> subjects = await _subjectService.GetAllSubjects();
 
-            return View(books);
+            return View(subjects);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            Book? book = await _bookService.GetBookById(id);
+            Subject? subject = await _subjectService.GetSubjectById(id);
 
-            if (book == null)
+            if (subject == null)
             {
                 return NotFound();
             }
 
-            return View(book);
+            return View(subject);
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            await SetViewBag();
-
-            return View(new Book());
+            return View(new Subject());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Book book)
+        public async Task<IActionResult> Create(Subject subject)
         {
-            await SetViewBag();
-
             if (!ModelState.IsValid)
             {
-                return View(book);
+                return View(subject);
             }
 
-            ServiceResult result = await _bookService.AddBook(book);
+            ServiceResult result = await _subjectService.AddSubject(subject);
 
             if (!result.Success)
             {
@@ -64,7 +58,7 @@ namespace LibraryManagementSystem.Controllers
                 else
                     TempData["Error"] = result.Message;
 
-                return View(book);
+                return View(subject);
             }
 
             return RedirectToAction("Index");
@@ -72,30 +66,26 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            await SetViewBag();
+            Subject? subject = await _subjectService.GetSubjectById(id);
 
-            Book? book = await _bookService.GetBookById(id);
-
-            if (book == null)
+            if (subject == null)
             {
                 return NotFound();
             }
 
-            return View(book);
+            return View(subject);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Book book)
+        public async Task<IActionResult> Edit(Subject subject)
         {
-            await SetViewBag();
-
             if (!ModelState.IsValid)
             {
-                return View(book);
+                return View(subject);
             }
 
-            ServiceResult result = await _bookService.UpdateBook(book);
+            ServiceResult result = await _subjectService.UpdateSubject(subject);
 
             if (!result.Success)
             {
@@ -104,7 +94,7 @@ namespace LibraryManagementSystem.Controllers
                 else
                     TempData["Error"] = result.Message;
 
-                return View(book);
+                return View(subject);
             }
 
             return RedirectToAction("Index");
@@ -112,22 +102,22 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            Book? book = await _bookService.GetBookById(id);
+            Subject? subject = await _subjectService.GetSubjectById(id);
 
-            if (book == null)
+            if (subject == null)
             {
                 return NotFound();
             }
 
-            return View(book);
+            return View(subject);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Book? book = await _bookService.GetBookById(id);
-            ServiceResult result = await _bookService.DeleteBook(book);
+            Subject? subject = await _subjectService.GetSubjectById(id);
+            ServiceResult result = await _subjectService.DeleteSubject(subject);
 
             if (!result.Success)
             {
@@ -136,16 +126,10 @@ namespace LibraryManagementSystem.Controllers
                 else
                     TempData["Error"] = result.Message;
 
-                return View(book);
+                return View(subject);
             }
 
             return RedirectToAction("Index");
-        }
-
-        private async Task SetViewBag()
-        {
-            ViewBag.Subjects = await _subjectService.GetAllSubjects();
-            ViewBag.Editorials = new List<Editorial>() { new Editorial() { EditorialId = 1, Name = "Editorial Temporal1" }, new Editorial() { EditorialId = 2, Name = "Editorial Temporal2" } };
         }
     }
 }

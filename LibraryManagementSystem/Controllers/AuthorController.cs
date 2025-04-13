@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using LibraryManagementSystem.BLL;
+﻿using LibraryManagementSystem.BLL;
 using LibraryManagementSystem.Common;
 using LibraryManagementSystem.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementSystem.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Librarian")]
     public class AuthorController : Controller
     {
         private readonly AuthorService _authorService;
@@ -17,7 +16,6 @@ namespace LibraryManagementSystem.Controllers
             _authorService = authorService;
         }
 
-        [Authorize]
         public async Task<IActionResult> Index()
         {
             List<Author> authors = await _authorService.GetAllAuthors();
@@ -25,7 +23,6 @@ namespace LibraryManagementSystem.Controllers
             return View(authors);
         }
 
-        [Authorize]
         public async Task<IActionResult> Details(int id)
         {
             Author? author = await _authorService.GetAuthorById(id);
@@ -38,13 +35,11 @@ namespace LibraryManagementSystem.Controllers
             return View(author);
         }
 
-        [Authorize(Roles = "Librarian")]
         public IActionResult Create()
         {
             return View(new Author());
         }
 
-        [Authorize(Roles = "Librarian")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Author author)
@@ -69,7 +64,6 @@ namespace LibraryManagementSystem.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "Librarian")]
         public async Task<IActionResult> Edit(int id)
         {
             Author? author = await _authorService.GetAuthorById(id);
@@ -82,7 +76,6 @@ namespace LibraryManagementSystem.Controllers
             return View(author);
         }
 
-        [Authorize(Roles = "Librarian")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Author author)
@@ -107,7 +100,6 @@ namespace LibraryManagementSystem.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "Librarian")]
         public async Task<IActionResult> Delete(int id)
         {
             Author? author = await _authorService.GetAuthorById(id);
@@ -120,7 +112,6 @@ namespace LibraryManagementSystem.Controllers
             return View(author);
         }
 
-        [Authorize(Roles = "Librarian")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
