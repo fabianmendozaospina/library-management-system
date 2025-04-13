@@ -5,16 +5,38 @@ namespace LibraryManagementSystem.Common
 {
     public static class Helper
     {
-        public static (string, string) GetMessage(string className, string generalMessage, Exception? innerException)
+        public static (string, string) GetMessage(string className, string genericMessage, Exception? innerException)
         {
             bool hasInnerMessage = innerException != null && innerException.Message != null;
-            string message = hasInnerMessage ? innerException?.Message ?? "" : generalMessage;
+            string message = hasInnerMessage ? innerException?.Message ?? "" : genericMessage;
 
             if (!hasInnerMessage)
             {
-                return (message, string.Empty);
+                return (GetGenericMessage(message), string.Empty);
             }
 
+            return GetSqlServerMessage(className, message, innerException);
+        }
+
+        private static string GetGenericMessage(string message)
+        {
+            // EF Errors.
+            Match match = Regex.Match(message, @"The association between entity types '(\w+)' and '(\w+)'", RegexOptions.IgnoreCase);
+
+            if (match.Success)
+            {
+                string entity1 = match.Groups[1].Value.ToLower();
+                string entity2 = match.Groups[2].Value.ToLower();
+
+                return $"Invalid operation. This {entity1} is already associated with at least one {entity2}.";
+            }
+
+            // Generic Errors.
+            return message;
+        }
+
+        private static (string, string) GetSqlServerMessage(string className, string message, Exception? innerException)
+        {
             string clientMessage = "";
             string field = "";
 
