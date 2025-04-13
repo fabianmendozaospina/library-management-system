@@ -1,0 +1,129 @@
+﻿@using LibraryManagementSystem.Model
+@model Book
+
+@{
+    ViewData["Title"] = "Add New Book";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="ISBN" class="form-label">ISBN</label>
+        <input asp-for="ISBN" class="form-control" maxlength="13" required />
+        <span asp-validation-for="ISBN" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Name</label>
+        <input asp-for="Name" class="form-control" maxlength="50" required />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SubjectId" class="form-label">Subject</label>
+        <select asp-for="SubjectId" class="form-select" asp-items="@(new SelectList(ViewBag.Subjects, "SubjectId", "Name"))" required>
+            <option value="">-- Select a Subject --</option>
+        </select>
+        <span asp-validation-for="SubjectId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Synopsis" class="form-label">Synopsis</label>
+        <textarea asp-for="Synopsis" class="form-control" rows="5" maxlength="500"></textarea>
+        <span asp-validation-for="Synopsis" class="text-danger"></span>
+    </div>
+    <input type="hidden" name="Photo" id="Photo" value="photo" />
+
+    <p>
+        <button type="button" class="btn btn-primary" onclick="addEdition()">Add New Edition</button>
+    </p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Editorial</th>
+                <th>Edition Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="editionsTableBody">
+            @if (Model?.Editions != null && Model.Editions.Any())
+            {
+                for (int i = 0; i < Model.Editions.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <select asp-for="Editions[i].EditorialId" class="form-select" asp-items="@(new SelectList(ViewBag.Editorials, "EditorialId", "Name"))">
+                                <option value="">-- Select Editorial --</option>
+                            </select>
+                            <span asp-validation-for="Editions[i].EditorialId" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <input asp-for="Editions[i].EditionDate" type="date" class="form-control" />
+                            <span asp-validation-for="Editions[i].EditionDate" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteEdition(this)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@if (TempData["Error"] != null)
+{
+    <div class="text-danger mt-3">@TempData["Error"]</div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        var editorials = @Html.Raw(Json.Serialize(ViewBag.Editorials));
+        var editorialsOptions = `<option value=''>-- Select Editorial --</option>` + editorials.map(e =>
+            `<option value="${e.editorialId}">${e.name}</option>`
+        ).join('');
+
+        function addEdition() {
+            var index = document.querySelectorAll('#editionsTableBody tr').length;
+            var newRow = `<tr>
+                <td>
+                    <select name="Editions[${index}].EditorialId" class="form-select"
+                            data-val="true"
+                            data-val-required="Editorial is required">
+                        ${editorialsOptions}
+                    </select>
+                    <span class="text-danger field-validation-valid"
+                          data-valmsg-for="Editions[${index}].EditorialId"
+                          data-valmsg-replace="true"></span>
+                </td>
+                <td>
+                    <input name="Editions[${index}].EditionDate" type="date" class="form-control"
+                           data-val="true"
+                           data-val-required="Edition date is required" />
+                    <span class="text-danger field-validation-valid"
+                          data-valmsg-for="Editions[${index}].EditionDate"
+                          data-valmsg-replace="true"></span>
+                </td>
+                <td>
+                    <input type="hidden" name="Editions[${index}].EditionId" value="0" />
+                    <input type="hidden" name="Editions[${index}].BookId" value="0" />
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteEdition(this)">Delete</button>
+                </td>
+            </tr>`;
+
+            document.querySelector('#editionsTableBody').insertAdjacentHTML('beforeend', newRow);
+            $.validator.unobtrusive.parse('#editionsTableBody');
+        }
+
+        function deleteEdition(button) {
+            button.closest('tr').remove();
+        }
+    </script>
+}

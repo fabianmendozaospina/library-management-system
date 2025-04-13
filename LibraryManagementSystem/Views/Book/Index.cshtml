@@ -1,0 +1,55 @@
+﻿@using LibraryManagementSystem.Model
+@model IEnumerable<Book>
+
+@{
+    ViewData["Title"] = "Books";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+
+@if (User.IsInRole("Librarian"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Add New Book</a>
+    </p>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Book Id</th>
+            <th>ISBN</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var tournament in Model)
+            {
+                <tr>
+                    <td>@tournament.BookId</td>
+                    <td>@tournament.ISBN</td>
+                    <td>@tournament.Name</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@tournament.BookId" class="btn btn-info btn-sm">Details</a>
+
+                        @if (User.IsInRole("Librarian"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@tournament.BookId" class="btn btn-warning btn-sm">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@tournament.BookId" class="btn btn-danger btn-sm">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center">There are no registered books.</td>
+            </tr>
+        }
+    </tbody>
+</table>

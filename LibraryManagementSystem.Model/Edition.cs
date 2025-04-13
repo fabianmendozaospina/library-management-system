@@ -1,4 +1,6 @@
-﻿namespace LibraryManagementSystem.Model
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LibraryManagementSystem.Model
 {
     public class Edition
     {

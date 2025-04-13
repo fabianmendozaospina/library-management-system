@@ -40,7 +40,7 @@ namespace LibraryManagementSystem.BLL
             }
             catch (Exception ex)
             {
-                (string message, string field) = Issue.GetMessage(ex.Message, ex.InnerException);
+                (string message, string field) = Helper.GetMessage(this.GetType().Name, ex.Message, ex.InnerException);
 
                 return ServiceResult.Fail($"{message}", field);
             }
@@ -61,7 +61,7 @@ namespace LibraryManagementSystem.BLL
                     return ServiceResult.Fail($"Author {Constants.NOT_FOUND_ERROR}");
                 }
 
-                (string message, string field) = Issue.GetMessage(ex.Message, ex.InnerException);
+                (string message, string field) = Helper.GetMessage(this.GetType().Name, ex.Message, ex.InnerException);
 
                 return ServiceResult.Fail($"{message}", field);
             }
@@ -77,7 +77,7 @@ namespace LibraryManagementSystem.BLL
             }
             catch (Exception ex)
             {
-                (string message, string field) = Issue.GetMessage(ex.Message, ex.InnerException);
+                (string message, string field) = Helper.GetMessage(this.GetType().Name, ex.Message, ex.InnerException);
 
                 return ServiceResult.Fail($"{message}", field);
             }
