@@ -1,0 +1,19 @@
+﻿@model LibraryManagementSystem.Model.Subject
+@{
+    ViewData["Title"] = "Subject Details";
+}
+
+<h2 class="my-4">Subject Details</h2>
+
+<div class="mb-3">
+    <label class="form-label fw-bold">Subject ID:</label>
+    <div>@Model.SubjectId</div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label fw-bold">Name:</label>
+    <div>@Model.Name</div>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+<a asp-action="Edit" asp-route-id="@Model.SubjectId" class="btn btn-warning">Edit</a>

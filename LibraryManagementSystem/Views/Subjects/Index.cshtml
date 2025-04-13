@@ -1,0 +1,32 @@
+﻿@model List<LibraryManagementSystem.Model.Subject>
+@{
+    ViewData["Title"] = "Subjects";
+}
+
+<h2 class="my-4">Subjects</h2>
+
+<a href="@Url.Action("Create")" class="btn btn-primary mb-3">Create New Subject</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th style="width: 180px">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var subject in Model)
+        {
+            <tr>
+                <td>@subject.SubjectId</td>
+                <td>@subject.Name</td>
+                <td>
+                    <a href="@Url.Action("Details", new { id = subject.SubjectId })" class="btn btn-sm btn-info">Details</a>
+                    <a href="@Url.Action("Edit", new { id = subject.SubjectId })" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="@Url.Action("Delete", new { id = subject.SubjectId })" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
