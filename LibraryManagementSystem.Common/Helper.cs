@@ -43,27 +43,27 @@ namespace LibraryManagementSystem.Common
 
             if (innerException is SqlException sqlEx)
             {
-                field = GetFieldName(message);
+                (field, string verb) = GetFieldName(message);
 
                 switch (sqlEx.Number)
                 {
                     case 515:
-                        clientMessage = $"The {field} field is required.";
+                        clientMessage = $"The {field} field {verb} required.";
                         break;
 
                     case 547:
-                        clientMessage = $"The value entered into the {field} field is invalid.";
+                        clientMessage = $"The value entered into the {field} field {verb} invalid.";
                         break;
 
                     case 2601:
-                        clientMessage = $"The duplicated {(string.IsNullOrWhiteSpace(field) ? "data" : field)} is not valid{(string.IsNullOrWhiteSpace(field) ? " (" + GetDuplicatedKey(message) + ")" : "")}.";
+                        clientMessage = $"The duplicated {(string.IsNullOrWhiteSpace(field) ? "data" : field)} {verb} not valid{(string.IsNullOrWhiteSpace(field) ? " (" + GetDuplicatedKey(message) + ")" : "")}.";
                         break;
                 }
 
-                if (field != "" && GetTableName(message) != GetMainTableName(className))
+                if (field.Contains(",") || (field != "" && GetTableName(message) != GetMainTableName(className)))
                 {
-                    // When the validation is in a secundary table,
-                    // don't show the message in an specific field.
+                    // When the field is a list or the validation is in a detail
+                    // table, don't show the message in an specific field.
                     field = "";
                 }
             }
@@ -73,34 +73,48 @@ namespace LibraryManagementSystem.Common
 
         private static string GetTableName(string message)
         {
-            // By Table.
-            Match tableMatch = Regex.Match(message, @"table\s+""dbo\.(\w+)""", RegexOptions.IgnoreCase);
+            // By table "dbo.TableName"
+            Match tableMatch1 = Regex.Match(message, @"table\s+""dbo\.(\w+)""", RegexOptions.IgnoreCase);
 
-            if (tableMatch.Success)
+            if (tableMatch1.Success)
             {
-                return tableMatch.Groups[1].Value.ToLower();
+                return tableMatch1.Groups[1].Value.ToLower();
             }
 
-            // By Object.
-            Match objectMatch = Regex.Match(message, @"object\s+'dbo\.(\w+)'", RegexOptions.IgnoreCase);
+            // By table 'Database.dbo.TableName'
+            Match tableMatch3 = Regex.Match(message, @"table\s+'(?:\w+\.)?dbo\.(\w+)'", RegexOptions.IgnoreCase);
 
-            if (objectMatch.Success)
+            if (tableMatch3.Success)
             {
-                return objectMatch.Groups[1].Value.ToLower();
+                return tableMatch3.Groups[1].Value.ToLower();
+            }
+
+            // By object 'dbo.TableName'
+            Match tableMatch2 = Regex.Match(message, @"object\s+'dbo\.(\w+)'", RegexOptions.IgnoreCase);
+            if (tableMatch2.Success)
+            {
+                return tableMatch2.Groups[1].Value.ToLower();
             }
 
             return "";
         }
 
 
-        private static string GetFieldName(string message)
+        private static (string, string) GetFieldName(string message)
         {
             // By Column.
             Match columnMatch = Regex.Match(message, @"column '(\w+)'");
 
             if (columnMatch.Success)
             {
-                return columnMatch.Groups[1].Value;
+                string field = columnMatch.Groups[1].Value;
+
+                if (field.EndsWith("Id", StringComparison.OrdinalIgnoreCase))
+                {
+                    field = field.Substring(0, field.Length - 2); 
+                }
+
+                return (field, "is");
             }
 
             // By Index.
@@ -108,12 +122,20 @@ namespace LibraryManagementSystem.Common
 
             if (indexMatch.Success)
             {
-                return indexMatch.Groups[1].Value;
+                return GetAllFieldNames(indexMatch.Groups[1].Value);
             }
 
-            return "";
+            return ("", "");
         }
 
+        private static (string, string) GetAllFieldNames(string fields)
+        {
+            string fieldsList = string.Join(", ", fields
+                                        .Split('_')
+                                        .Select(f => f.EndsWith("Id") ? f.Substring(0, f.Length - 2) : f));
+
+            return (fieldsList, fieldsList.Contains(",") ? "are" : "is"); 
+        }
 
         private static string GetMainTableName(string className)
         {
