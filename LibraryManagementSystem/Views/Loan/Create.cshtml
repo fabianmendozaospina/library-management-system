@@ -11,7 +11,7 @@
     <div class="col-md-6">
         <form asp-action="Create" method="post">
             <div class="mb-3">
-                <label asp-for="ReaderId" class="form-label">Full Name</label>
+                <label asp-for="ReaderId" class="form-label">Reader</label>
                 <select asp-for="ReaderId" class="form-select" asp-items="@(new SelectList(ViewBag.Readers, "ReaderId", "FullName"))">
                     <option value="">-- Select Reader --</option>
                 </select>
