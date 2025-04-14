@@ -16,12 +16,14 @@ namespace LibraryManagementSystem.DAL
         public async Task<List<Author>> GetAllAuthors()
         {
             return await _context.Authors
-            .ToListAsync();
+                .Include(b => b.BookAuthors)
+                .ToListAsync();
         }
 
         public async Task<Author> GetAuthorById(int id)
         {
             return await _context.Authors
+                .Include(b => b.BookAuthors)
                 .SingleOrDefaultAsync(r => r.AuthorId == id);
         }
 
@@ -35,7 +37,9 @@ namespace LibraryManagementSystem.DAL
 
         public async Task UpdateAuthor(Author author)
         {
-            Author existingAuthor = await _context.Authors.FirstOrDefaultAsync(r => r.AuthorId == author.AuthorId);
+            Author? existingAuthor = await _context.Authors
+                                            .Include(b => b.BookAuthors)
+                                            .FirstOrDefaultAsync(r => r.AuthorId == author.AuthorId);
 
             if (existingAuthor == null)
             {
@@ -47,6 +51,10 @@ namespace LibraryManagementSystem.DAL
             existingAuthor.BirthDate = author.BirthDate;
             existingAuthor.DateOfDeath = author.DateOfDeath;
             existingAuthor.Biography = author.Biography;
+
+            if (existingAuthor.BookAuthors != null)
+                _context.BookAuthors.RemoveRange(existingAuthor.BookAuthors);
+            existingAuthor.BookAuthors = author.BookAuthors;
 
             await _context.SaveChangesAsync();
         }

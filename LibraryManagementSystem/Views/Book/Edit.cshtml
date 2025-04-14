@@ -80,7 +80,7 @@
         <table class="table table-striped" id="noRows">
             <tbody>
                 <tr>
-                    <td colspan="5" class="text-center">There are no registered editions.</td>
+                    <td colspan="3" class="text-center">There are no registered editions.</td>
                 </tr>
             </tbody>
         </table>
@@ -144,6 +144,49 @@
 
         function deleteEdition(button) {
             button.closest('tr').remove();
+            reindexEditions();
         }
+
+        function reindexEditions() {
+            const rows = document.querySelectorAll('#editionsTableBody tr');
+            rows.forEach((row, index) => {
+                // EditorialId
+                const select = row.querySelector('select[name^="Editions"][name$=".EditorialId"]');
+                if (select) {
+                    select.name = `Editions[${index}].EditorialId`;
+                }
+
+                // EditionDate
+                const editionDateInput = row.querySelector('input[type="date"][name^="Editions"][name$=".EditionDate"]');
+                if (editionDateInput) {
+                    editionDateInput.name = `Editions[${index}].EditionDate`;
+                }
+
+                // EditionId (hidden)
+                const editionIdInput = row.querySelector('input[type="hidden"][name^="Editions"][name$=".EditionId"]');
+                if (editionIdInput) {
+                    editionIdInput.name = `Editions[${index}].EditionId`;
+                }
+
+                // BookId (hidden)
+                const bookIdInput = row.querySelector('input[type="hidden"][name^="Editions"][name$=".BookId"]');
+                if (bookIdInput) {
+                    bookIdInput.name = `Editions[${index}].BookId`;
+                }
+
+                // Span de validación para EditorialId
+                const editorialSpan = row.querySelector('span[data-valmsg-for$=".EditorialId"]');
+                if (editorialSpan) {
+                    editorialSpan.setAttribute('data-valmsg-for', `Editions[${index}].EditorialId`);
+                }
+
+                // Span de validación para EditionDate
+                const editionDateSpan = row.querySelector('span[data-valmsg-for$=".EditionDate"]');
+                if (editionDateSpan) {
+                    editionDateSpan.setAttribute('data-valmsg-for', `Editions[${index}].EditionDate`);
+                }
+            });
+        }
+
     </script>
 }

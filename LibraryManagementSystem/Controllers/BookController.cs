@@ -144,7 +144,8 @@ namespace LibraryManagementSystem.Controllers
 
         private async Task SetViewBag()
         {
-            ViewBag.Subjects = await _subjectService.GetAllSubjects();
+            List<Subject> subjets = await _subjectService.GetAllSubjects();
+            ViewBag.Subjects = subjets.Select(s => new { s.SubjectId, s.Name }).ToList();
             ViewBag.Editorials = new List<Editorial>() { new Editorial() { EditorialId = 1, Name = "Editorial Temporal1" }, new Editorial() { EditorialId = 2, Name = "Editorial Temporal2" } };
         }
     }

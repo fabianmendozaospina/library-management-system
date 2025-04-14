@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibraryManagementSystem.Common
 {
@@ -55,7 +56,7 @@ namespace LibraryManagementSystem.Common
                         break;
 
                     case 2601:
-                        clientMessage = $"Duplicated data not valid ({GetDuplicatedKey(message)}).";
+                        clientMessage = $"The duplicated {(string.IsNullOrWhiteSpace(field) ? "data" : field)} is not valid{(string.IsNullOrWhiteSpace(field) ? " (" + GetDuplicatedKey(message) + ")" : "")}.";
                         break;
                 }
 
@@ -72,27 +73,47 @@ namespace LibraryManagementSystem.Common
 
         private static string GetTableName(string message)
         {
-            Match match = Regex.Match(message, @"table\s+""dbo\.(\w+)""", RegexOptions.IgnoreCase);
+            // By Table.
+            Match tableMatch = Regex.Match(message, @"table\s+""dbo\.(\w+)""", RegexOptions.IgnoreCase);
 
-            if (match.Success)
+            if (tableMatch.Success)
             {
-                return match.Groups[1].Value.ToLower();
+                return tableMatch.Groups[1].Value.ToLower();
+            }
+
+            // By Object.
+            Match objectMatch = Regex.Match(message, @"object\s+'dbo\.(\w+)'", RegexOptions.IgnoreCase);
+
+            if (objectMatch.Success)
+            {
+                return objectMatch.Groups[1].Value.ToLower();
             }
 
             return "";
         }
+
 
         private static string GetFieldName(string message)
         {
-            Match match = Regex.Match(message, @"column '(\w+)'");
+            // By Column.
+            Match columnMatch = Regex.Match(message, @"column '(\w+)'");
 
-            if (match.Success)
+            if (columnMatch.Success)
             {
-                return match.Groups[1].Value;
+                return columnMatch.Groups[1].Value;
+            }
+
+            // By Index.
+            Match indexMatch = Regex.Match(message, @"index 'IX_[\w\d_]*?_(\w+)'");
+
+            if (indexMatch.Success)
+            {
+                return indexMatch.Groups[1].Value;
             }
 
             return "";
         }
+
 
         private static string GetMainTableName(string className)
         {

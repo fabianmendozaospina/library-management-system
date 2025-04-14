@@ -9,6 +9,6 @@
         public DateTime? BirthDate { get; set; }
         public DateTime? DateOfDeath { get; set; }
         public string Biography { get; set; }
-        public ICollection<BookAuthor>? BookAuthors { get; set; }
+        public List<BookAuthor>? BookAuthors { get; set; } = new List<BookAuthor>();
     }
 }

@@ -3,6 +3,7 @@ using LibraryManagementSystem.Common;
 using LibraryManagementSystem.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -10,10 +11,12 @@ namespace LibraryManagementSystem.Controllers
     public class AuthorController : Controller
     {
         private readonly AuthorService _authorService;
+        private readonly BookService _bookService;
 
-        public AuthorController(AuthorService authorService)
+        public AuthorController(AuthorService authorService, BookService bookService)
         {
             _authorService = authorService;
+            _bookService = bookService;
         }
 
         public async Task<IActionResult> Index()
@@ -35,8 +38,10 @@ namespace LibraryManagementSystem.Controllers
             return View(author);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            await SetViewBag();
+
             return View(new Author());
         }
 
@@ -44,6 +49,8 @@ namespace LibraryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Author author)
         {
+            await SetViewBag();
+
             if (!ModelState.IsValid)
             {
                 return View(author);
@@ -66,6 +73,8 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
+            await SetViewBag();
+
             Author? author = await _authorService.GetAuthorById(id);
 
             if (author == null)
@@ -80,6 +89,8 @@ namespace LibraryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Author author)
         {
+            await SetViewBag();
+
             if (!ModelState.IsValid)
             {
                 return View(author);
@@ -130,6 +141,12 @@ namespace LibraryManagementSystem.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        private async Task SetViewBag()
+        {
+            List<Book> books = await _bookService.GetAllBooks();
+            ViewBag.Books = books.Select(b => new { b.BookId, b.Name }).ToList();
         }
     }
 }
