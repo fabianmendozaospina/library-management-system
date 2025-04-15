@@ -22,10 +22,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
-namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
-{
-    public class RegisterModel : PageModel
-    {
+namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account {
+    public class RegisterModel : PageModel {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserStore<IdentityUser> _userStore;
@@ -42,8 +40,7 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
             RoleManager<IdentityRole> roleManager,
-            LibraryDbContext context)
-        {
+            LibraryDbContext context) {
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
@@ -77,8 +74,7 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public class InputModel
-        {
+        public class InputModel {
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -87,6 +83,20 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
+
+            [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+
+            [Required]
+            [DataType(DataType.Date)]
+            [Display(Name = "Birth Date")]
+            public DateTime BirthDate { get; set; }
+
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -109,32 +119,27 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
         }
 
 
-        public async Task OnGetAsync(string returnUrl = null)
-        {
+        public async Task OnGetAsync(string returnUrl = null) {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-        {
+        public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
-                if (result.Succeeded)
-                {
+                if (result.Succeeded) {
                     // Register the user in the Reader table.
                     await CreateReader(user);
 
                     // Assign the "Reader" role to the new user.
-                    if (!await _roleManager.RoleExistsAsync("Reader"))
-                    {
+                    if (!await _roleManager.RoleExistsAsync("Reader")) {
                         await _roleManager.CreateAsync(new IdentityRole("Reader"));
                     }
 
@@ -155,18 +160,15 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount) {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                     }
-                    else
-                    {
+                    else {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
                 }
-                foreach (var error in result.Errors)
-                {
+                foreach (var error in result.Errors) {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
@@ -175,50 +177,41 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
-        {
-            try
-            {
+        private IdentityUser CreateUser() {
+            try {
                 return Activator.CreateInstance<IdentityUser>();
-            }
-            catch
-            {
+            } catch {
                 throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
                     $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
-        private IUserEmailStore<IdentityUser> GetEmailStore()
-        {
-            if (!_userManager.SupportsUserEmail)
-            {
+        private IUserEmailStore<IdentityUser> GetEmailStore() {
+            if (!_userManager.SupportsUserEmail) {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
             return (IUserEmailStore<IdentityUser>)_userStore;
         }
 
-        private async Task CreateReader(IdentityUser user)
-        {
+        private async Task CreateReader(IdentityUser user) {
             string userId = await _userManager.GetUserIdAsync(user);
 
-            Reader newReader = new Reader
-            {
+            Reader newReader = new Reader {
                 CoreId = userId,
-                FirstName = Constants.TEMPORAL_DATA,
-                LastName = Constants.TEMPORAL_DATA,
-                Email = user.Email
+                FirstName = Input.FirstName,
+                LastName = Input.LastName,
+                Email = user.Email,
+                BirthDate = Input.BirthDate
             };
 
-            try
-            {
+            try {
                 _context.Readers.Add(newReader);
                 await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 throw new InvalidOperationException($"{ex.Message}. {ex.InnerException}");
             }
         }
     }
 }
+
