@@ -1,0 +1,28 @@
+﻿@model LibraryManagementSystem.Model.Reader
+
+@{
+    ViewData["Title"] = "Delete Reader";
+}
+
+<h2>Delete Reader</h2>
+
+<div>
+    <h3>Are you sure you want to delete the following reader?</h3>
+    <div>
+        <strong>Full Name:</strong> @Model.FullName
+    </div>
+    <div>
+        <strong>Core ID:</strong> @Model.CoreId
+    </div>
+    <div>
+        <strong>Birth Date:</strong> @Model.BirthDay.ToShortDateString()
+    </div>
+    <div>
+        <strong>Loans Count:</strong> @(Model.Loans?.Count ?? 0)
+    </div>
+
+    <form method="post" asp-action="Delete" asp-route-id="@Model.ReaderId">
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

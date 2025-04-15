@@ -27,6 +27,7 @@ namespace LibraryManagementSystem
             builder.Services.AddScoped<LoanRepository>();
             builder.Services.AddScoped<RatingRepository>();
             builder.Services.AddScoped<SubjectRepository>();
+            builder.Services.AddScoped<ReaderRepository>();
 
             builder.Services.AddScoped<AuthorService>();
             builder.Services.AddScoped<BookService>();
@@ -35,6 +36,7 @@ namespace LibraryManagementSystem
             builder.Services.AddScoped<LoanService>();
             builder.Services.AddScoped<RatingService>();
             builder.Services.AddScoped<SubjectService>();
+            builder.Services.AddScoped<ReaderService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

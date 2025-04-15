@@ -8,7 +8,7 @@
         public string LastName { get; set; }
         public string FullName => $"{FirstName} {LastName}";
         public DateTime BirthDay { get; set; }
-        public ICollection<Loan> Loans { get; set; }
-        public ICollection<Rating> Ratings { get; set; }
+        public ICollection<Loan>? Loans { get; set; }
+        public ICollection<Rating>? Ratings { get; set; }
     }
 }

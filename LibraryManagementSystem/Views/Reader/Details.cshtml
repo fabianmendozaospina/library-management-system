@@ -1,0 +1,39 @@
+﻿@using LibraryManagementSystem.Model
+@model LibraryManagementSystem.Model.ViewModels.ReaderLoan
+
+@{
+    ViewData["Title"] = "Reader Details";
+}
+
+<h2>Reader Details</h2>
+
+<div>
+    <h4>@Model.Reader.FullName</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Core ID</dt>
+        <dd class="col-sm-10">@Model.Reader.CoreId</dd>
+
+        <dt class="col-sm-2">First Name</dt>
+        <dd class="col-sm-10">@Model.Reader.FirstName</dd>
+
+        <dt class="col-sm-2">Last Name</dt>
+        <dd class="col-sm-10">@Model.Reader.LastName</dd>
+
+        <dt class="col-sm-2">Birthday</dt>
+        <dd class="col-sm-10">@Model.Reader.BirthDay.ToShortDateString()</dd>
+
+        <dt class="col-sm-2">Loans:</dt>
+        <dd class="col-sm-10">
+            @foreach(Loan loan in Model.Loans)
+            {
+                <p>Loan id: @loan.LoanId</p>
+                <p>Checkout Date: @loan.InitialDate</p>
+                <p>Due Date: @loan.FinalDate</p>
+            }
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Reader.ReaderId" class="btn btn-warning">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

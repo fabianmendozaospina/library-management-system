@@ -1,0 +1,46 @@
+﻿@using LibraryManagementSystem.Model
+@model IEnumerable<LibraryManagementSystem.Model.Reader>
+
+@{
+    ViewData["Title"] = "Readers";
+    bool isLibrarian = User.IsInRole("Librarian");
+}
+
+<h2>Reader List</h2>
+
+@if (isLibrarian) {
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Add New Reader</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            @if (isLibrarian) {
+                <th>Core ID</th>
+                <th>Loans</th>
+            }
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Reader reader in Model) {
+            <tr>
+                <td>@reader.FullName</td>
+                @if (isLibrarian) {
+                    <td>@reader.CoreId</td>
+                    <td>@(reader.Loans?.Count ?? 0)</td>
+                }
+                <td>
+                    <a asp-action="Details" asp-route-id="@reader.ReaderId" class="btn btn-info btn-sm">View</a>
+                    @if (isLibrarian) {
+                        <a asp-action="Edit" asp-route-id="@reader.ReaderId" class="btn btn-warning btn-sm">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@reader.ReaderId" class="btn btn-danger btn-sm">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
