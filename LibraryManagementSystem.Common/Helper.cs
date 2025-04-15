@@ -38,36 +38,39 @@ namespace LibraryManagementSystem.Common
         private static (string, string) GetSqlServerMessage(string className, string message, Exception? innerException)
         {
             string clientMessage = "";
-            string field = "";
+            string fieldName = "";
 
             if (innerException is SqlException sqlEx)
             {
-                (field, string verb) = GetFieldName(message);
+                (fieldName, string verb) = GetFieldName(message);
 
                 switch (sqlEx.Number)
                 {
                     case 515:
-                        clientMessage = $"The {field} field {verb} required.";
+                        clientMessage = $"The {fieldName} field {verb} required.";
                         break;
 
                     case 547:
-                        clientMessage = $"The value entered into the {field} field {verb} invalid.";
+                        clientMessage = $"The value entered into the {fieldName} field {verb} invalid.";
                         break;
 
                     case 2601:
-                        clientMessage = $"The duplicated {(string.IsNullOrWhiteSpace(field) ? "data" : field)} {verb} not valid{(string.IsNullOrWhiteSpace(field) ? " (" + GetDuplicatedKey(message) + ")" : "")}.";
+                        clientMessage = $"The duplicated {(string.IsNullOrWhiteSpace(fieldName) ? "data" : fieldName)} {verb} not valid{(string.IsNullOrWhiteSpace(fieldName) ? " (" + GetDuplicatedKey(message) + ")" : "")}.";
                         break;
                 }
 
-                if (field.Contains(",") || (field != "" && GetTableName(message) != GetMainTableName(className)))
+                string tableName = GetTableName(message);
+                clientMessage = GetAttachedMessage(clientMessage, tableName, fieldName);
+
+                if (fieldName.Contains(",") || (fieldName != "" && tableName != GetMainTableName(className)))
                 {
                     // When the field is a list or the validation is in a detail
                     // table, don't show the message in an specific field.
-                    field = "";
+                    fieldName = "";
                 }
             }
 
-            return (clientMessage, field);
+            return (clientMessage, fieldName);
         }
 
         private static string GetTableName(string message)
@@ -110,7 +113,7 @@ namespace LibraryManagementSystem.Common
 
                 if (field.EndsWith("Id", StringComparison.OrdinalIgnoreCase))
                 {
-                    field = field.Substring(0, field.Length - 2); 
+                    field = field[..^2]; // Remove "Id"
                 }
 
                 return (field, "is");
@@ -124,9 +127,18 @@ namespace LibraryManagementSystem.Common
                 return GetAllFieldNames(indexMatch.Groups[1].Value);
             }
 
+            // By Check Constraint.
+            Match checkMatch = Regex.Match(message, @"constraint ""CK_[\w\d]+_(.+?)""");
+
+            if (checkMatch.Success)
+            {
+                return GetAllFieldNames(checkMatch.Groups[1].Value);
+            }
+
             return ("", "");
         }
 
+        /*
         private static (string, string) GetAllFieldNames(string fields)
         {
             string fieldsList = string.Join(", ", fields
@@ -134,7 +146,16 @@ namespace LibraryManagementSystem.Common
                                         .Select(f => f.EndsWith("Id") ? f.Substring(0, f.Length - 2) : f));
 
             return (fieldsList, fieldsList.Contains(",") ? "are" : "is"); 
+        }*/
+        private static (string, string) GetAllFieldNames(string fields)
+        {
+            string fieldsList = string.Join(", ", fields
+                .Split('_')
+                .Select(f => f.EndsWith("Id", StringComparison.OrdinalIgnoreCase) ? f[..^2] : f));
+
+            return (fieldsList, fieldsList.Contains(",") ? "are" : "is");
         }
+
 
         private static string GetMainTableName(string className)
         {
@@ -163,6 +184,17 @@ namespace LibraryManagementSystem.Common
             }
 
             return "";
+        }
+
+        private static string GetAttachedMessage(string message, string tableName, string fieldName)
+        {
+            if (fieldName.ToLower() == "birthdate")
+            {
+                if (tableName.ToLower() == "authors") return $"{message} Must be at least {Constants.MINIMUN_AGE_TOBE_AUTHOR} years old.";
+                if (tableName.ToLower() == "readers") return $"{message} Must be at least {Constants.MINIMUN_AGE_TOBE_READER} years old.";
+            }
+
+            return message;
         }
     }
 }

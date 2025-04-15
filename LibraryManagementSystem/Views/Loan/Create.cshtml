@@ -20,13 +20,20 @@
 
             <div class="mb-3">
                 <label asp-for="InitialDate" class="form-label">Initial Date</label>
-                <input asp-for="InitialDate" class="form-control" type="date" />
+                <input asp-for="InitialDate"
+                       class="form-control"
+                       type="date"
+                       value="@DateTime.Now.ToString("yyyy-MM-dd")"
+                       readonly />
                 <span asp-validation-for="InitialDate" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="FinalDate" class="form-label">Final Date</label>
-                <input asp-for="FinalDate" class="form-control" type="date" />
+                <input asp-for="FinalDate"
+                       class="form-control"
+                       type="date"
+                       value="@DateTime.Now.AddDays(15).ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="FinalDate" class="text-danger"></span>
             </div>
 

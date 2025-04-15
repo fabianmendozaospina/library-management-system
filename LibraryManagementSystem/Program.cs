@@ -23,6 +23,7 @@ namespace LibraryManagementSystem
             builder.Services.AddScoped<AuthorRepository>();
             builder.Services.AddScoped<BookRepository>();
             builder.Services.AddScoped<EditorialRepository>();
+            builder.Services.AddScoped<ReaderRepository>();
             builder.Services.AddScoped<LoanRepository>();
             builder.Services.AddScoped<RatingRepository>();
             builder.Services.AddScoped<SubjectRepository>();
@@ -30,6 +31,7 @@ namespace LibraryManagementSystem
             builder.Services.AddScoped<AuthorService>();
             builder.Services.AddScoped<BookService>();
             builder.Services.AddScoped<EditorialService>();
+            builder.Services.AddScoped<ReaderService>();
             builder.Services.AddScoped<LoanService>();
             builder.Services.AddScoped<RatingService>();
             builder.Services.AddScoped<SubjectService>();

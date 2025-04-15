@@ -56,7 +56,9 @@ namespace LibraryManagementSystem.DAL.Migrations
 
                     b.ToTable("Authors", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Author_BirthDate", "BirthDate <= DATEADD(YEAR, -5, GETDATE())");
+                            t.HasCheckConstraint("CK_Author_BirthDate", "BirthDate <= DATEADD(YEAR, -18, GETDATE())");
+
+                            t.HasCheckConstraint("CK_Author_BirthDate_DateOfDeath", "DateOfDeath IS NULL OR BirthDate < DateOfDeath");
 
                             t.HasCheckConstraint("CK_Author_DateOfDeath", "DateOfDeath IS NULL OR DateOfDeath <= GETDATE()");
                         });
@@ -111,9 +113,10 @@ namespace LibraryManagementSystem.DAL.Migrations
 
                     b.HasKey("BookAuthorId");
 
-                    b.HasIndex("AuthorId");
-
                     b.HasIndex("BookId");
+
+                    b.HasIndex("AuthorId", "BookId")
+                        .IsUnique();
 
                     b.ToTable("BookAuthors");
                 });
@@ -149,7 +152,10 @@ namespace LibraryManagementSystem.DAL.Migrations
                     b.HasIndex("ISBN")
                         .IsUnique();
 
-                    b.ToTable("Editions");
+                    b.ToTable("Editions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Edition_EditionDate", "EditionDate IS NULL OR EditionDate <= GETDATE()");
+                        });
                 });
 
             modelBuilder.Entity("LibraryManagementSystem.Model.Editorial", b =>
@@ -196,7 +202,12 @@ namespace LibraryManagementSystem.DAL.Migrations
 
                     b.HasIndex("ReaderId");
 
-                    b.ToTable("Loans");
+                    b.ToTable("Loans", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Loan_InitialDate", "InitialDate <= GETDATE()");
+
+                            t.HasCheckConstraint("CK_Loan_InitialDate_FinalDate", "InitialDate <= FinalDate");
+                        });
                 });
 
             modelBuilder.Entity("LibraryManagementSystem.Model.LoanDetail", b =>
@@ -261,13 +272,18 @@ namespace LibraryManagementSystem.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReaderId"));
 
-                    b.Property<DateTime>("BirthDay")
+                    b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CoreId")
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -279,12 +295,23 @@ namespace LibraryManagementSystem.DAL.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("Phone")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
                     b.HasKey("ReaderId");
 
                     b.HasIndex("CoreId")
                         .IsUnique();
 
-                    b.ToTable("Readers");
+                    b.HasIndex("Phone")
+                        .IsUnique()
+                        .HasFilter("[Phone] IS NOT NULL");
+
+                    b.ToTable("Readers", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Reader_BirthDay", "BirthDate IS NULL OR BirthDate <= DATEADD(YEAR, -5, GETDATE())");
+                        });
                 });
 
             modelBuilder.Entity("LibraryManagementSystem.Model.Subject", b =>

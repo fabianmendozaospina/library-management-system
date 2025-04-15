@@ -1,8 +1,8 @@
 ﻿@using LibraryManagementSystem.Model
-@model Author
+@model Reader
 
 @{
-    ViewData["Title"] = "Author Details";
+    ViewData["Title"] = "Reader Details";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -13,7 +13,7 @@
 
         <dl class="row">
             <dt class="col-sm-4">Id:</dt>
-            <dd class="col-sm-8">@Model.AuthorId</dd>
+            <dd class="col-sm-8">@Model.ReaderId</dd>
 
             <dt class="col-sm-4">First Name:</dt>
             <dd class="col-sm-8">@Model.FirstName</dd>
@@ -21,20 +21,17 @@
             <dt class="col-sm-4">Last Name:</dt>
             <dd class="col-sm-8">@Model.LastName</dd>
 
+            <dt class="col-sm-4">Phone:</dt>
+            <dd class="col-sm-8">@Model.Phone</dd>
+
             <dt class="col-sm-4">Birth Date:</dt>
             <dd class="col-sm-8">@Model.BirthDate</dd>
-
-            <dt class="col-sm-4">Date of Death:</dt>
-            <dd class="col-sm-8">@Model.DateOfDeath</dd>
-
-            <dt class="col-sm-4">Biography:</dt>
-            <dd class="col-sm-8">@Model.Biography</dd>
 
         </dl>
 
         @if(User.IsInRole("Librarian"))
         {
-            <a asp-action="Edit" asp-route-id="@Model.AuthorId" class="btn btn-primary">Edit</a>
+            <a asp-action="Edit" asp-route-id="@Model.ReaderId" class="btn btn-primary">Edit</a>
         }
         <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>

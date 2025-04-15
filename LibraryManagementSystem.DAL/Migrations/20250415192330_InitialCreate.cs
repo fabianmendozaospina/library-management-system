@@ -65,7 +65,8 @@ namespace LibraryManagementSystem.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Authors", x => x.AuthorId);
-                    table.CheckConstraint("CK_Author_BirthDate", "BirthDate <= DATEADD(YEAR, -5, GETDATE())");
+                    table.CheckConstraint("CK_Author_BirthDate", "BirthDate <= DATEADD(YEAR, -18, GETDATE())");
+                    table.CheckConstraint("CK_Author_BirthDate_DateOfDeath", "DateOfDeath IS NULL OR BirthDate < DateOfDeath");
                     table.CheckConstraint("CK_Author_DateOfDeath", "DateOfDeath IS NULL OR DateOfDeath <= GETDATE()");
                 });
 
@@ -91,11 +92,14 @@ namespace LibraryManagementSystem.DAL.Migrations
                     CoreId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    BirthDay = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Readers", x => x.ReaderId);
+                    table.CheckConstraint("CK_Reader_BirthDay", "BirthDate IS NULL OR BirthDate <= DATEADD(YEAR, -5, GETDATE())");
                 });
 
             migrationBuilder.CreateTable(
@@ -230,6 +234,8 @@ namespace LibraryManagementSystem.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Loans", x => x.LoanId);
+                    table.CheckConstraint("CK_Loan_InitialDate", "InitialDate <= GETDATE()");
+                    table.CheckConstraint("CK_Loan_InitialDate_FinalDate", "InitialDate <= FinalDate");
                     table.ForeignKey(
                         name: "FK_Loans_Readers_ReaderId",
                         column: x => x.ReaderId,
@@ -300,6 +306,7 @@ namespace LibraryManagementSystem.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Editions", x => x.EditionId);
+                    table.CheckConstraint("CK_Edition_EditionDate", "EditionDate IS NULL OR EditionDate <= GETDATE()");
                     table.ForeignKey(
                         name: "FK_Editions_Books_BookId",
                         column: x => x.BookId,
@@ -408,9 +415,10 @@ namespace LibraryManagementSystem.DAL.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookAuthors_AuthorId",
+                name: "IX_BookAuthors_AuthorId_BookId",
                 table: "BookAuthors",
-                column: "AuthorId");
+                columns: new[] { "AuthorId", "BookId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_BookAuthors_BookId",
@@ -475,6 +483,13 @@ namespace LibraryManagementSystem.DAL.Migrations
                 table: "Readers",
                 column: "CoreId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Readers_Phone",
+                table: "Readers",
+                column: "Phone",
+                unique: true,
+                filter: "[Phone] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subjects_Name",

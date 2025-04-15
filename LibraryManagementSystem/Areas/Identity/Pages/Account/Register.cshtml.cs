@@ -10,6 +10,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using LibraryManagementSystem.Common;
+using LibraryManagementSystem.DAL;
+using LibraryManagementSystem.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +33,7 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly LibraryDbContext _context;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -37,7 +41,8 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            LibraryDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -46,6 +51,7 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _context = context;
         }
 
         /// <summary>
@@ -123,6 +129,9 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    // Register the user in the Reader table.
+                    await CreateReader(user);
+
                     // Assign the "Reader" role to the new user.
                     if (!await _roleManager.RoleExistsAsync("Reader"))
                     {
@@ -187,6 +196,29 @@ namespace IntergalacticRaceLeague.Areas.Identity.Pages.Account
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
             return (IUserEmailStore<IdentityUser>)_userStore;
+        }
+
+        private async Task CreateReader(IdentityUser user)
+        {
+            string userId = await _userManager.GetUserIdAsync(user);
+
+            Reader newReader = new Reader
+            {
+                CoreId = userId,
+                FirstName = Constants.TEMPORAL_DATA,
+                LastName = Constants.TEMPORAL_DATA,
+                Email = user.Email
+            };
+
+            try
+            {
+                _context.Readers.Add(newReader);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"{ex.Message}. {ex.InnerException}");
+            }
         }
     }
 }

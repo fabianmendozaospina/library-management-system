@@ -1,4 +1,5 @@
-﻿using LibraryManagementSystem.Model;
+﻿using LibraryManagementSystem.Common;
+using LibraryManagementSystem.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -58,12 +59,20 @@ namespace LibraryManagementSystem.DAL
                 .HasKey(r => r.ReaderId);
 
             // Unique constraints.
+            modelBuilder.Entity<BookAuthor>()
+                .HasIndex(ba => new { ba.AuthorId, ba.BookId })
+                .IsUnique();
+
             modelBuilder.Entity<Subject>()
                 .HasIndex(s => s.Name)
                 .IsUnique();
 
             modelBuilder.Entity<Reader>()
                 .HasIndex(r => r.CoreId)
+                .IsUnique();
+
+            modelBuilder.Entity<Reader>()
+                .HasIndex(r => r.Phone)
                 .IsUnique();
 
             modelBuilder.Entity<Edition>()
@@ -148,8 +157,13 @@ namespace LibraryManagementSystem.DAL
                       .HasMaxLength(30);
 
             modelBuilder.Entity<Reader>()
-                      .Property(r => r.BirthDay)
-                      .IsRequired();
+                      .Property(r => r.Email)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+            modelBuilder.Entity<Reader>()
+                      .Property(r => r.Phone)
+                      .HasMaxLength(15);
 
             modelBuilder.Entity<Editorial>()
                       .Property(e => e.Name)
@@ -200,8 +214,30 @@ namespace LibraryManagementSystem.DAL
             modelBuilder.Entity<Author>()
                 .ToTable("Authors", tableBuilder =>
                 {
-                    tableBuilder.HasCheckConstraint("CK_Author_BirthDate", "BirthDate <= DATEADD(YEAR, -5, GETDATE())");
+                    string checkBirthDateAuthor = $"BirthDate <= DATEADD(YEAR, -{Constants.MINIMUN_AGE_TOBE_AUTHOR}, GETDATE())";
+                    tableBuilder.HasCheckConstraint("CK_Author_BirthDate", checkBirthDateAuthor);
                     tableBuilder.HasCheckConstraint("CK_Author_DateOfDeath", "DateOfDeath IS NULL OR DateOfDeath <= GETDATE()");
+                    tableBuilder.HasCheckConstraint("CK_Author_BirthDate_DateOfDeath", "DateOfDeath IS NULL OR BirthDate < DateOfDeath");
+                });
+
+            modelBuilder.Entity<Edition>()
+                .ToTable("Editions", tableBuilder =>
+                {
+                    tableBuilder.HasCheckConstraint("CK_Edition_EditionDate", "EditionDate IS NULL OR EditionDate <= GETDATE()");
+                });
+
+            modelBuilder.Entity<Loan>()
+                .ToTable("Loans", tableBuilder =>
+                {
+                    tableBuilder.HasCheckConstraint("CK_Loan_InitialDate", "InitialDate <= GETDATE()");
+                    tableBuilder.HasCheckConstraint("CK_Loan_InitialDate_FinalDate", "InitialDate <= FinalDate");
+                });
+
+            modelBuilder.Entity<Reader>()
+                .ToTable("Readers", tableBuilder =>
+                {
+                    string checkBirthDateReader = $"BirthDate IS NULL OR BirthDate <= DATEADD(YEAR, -{Constants.MINIMUN_AGE_TOBE_READER}, GETDATE())";
+                    tableBuilder.HasCheckConstraint("CK_Reader_BirthDay", checkBirthDateReader);
                 });
 
             // Relationships.

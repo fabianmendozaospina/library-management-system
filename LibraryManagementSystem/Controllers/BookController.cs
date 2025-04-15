@@ -56,6 +56,11 @@ namespace LibraryManagementSystem.Controllers
 
             if (!ModelState.IsValid)
             {
+                if (book.Editions == null || !book.Editions.Any())
+                {
+                    TempData["Error"] = Constants.EDITIONS_REQUIRED_ERRORS;
+                }
+
                 return View(book);
             }
 
@@ -96,6 +101,11 @@ namespace LibraryManagementSystem.Controllers
 
             if (!ModelState.IsValid)
             {
+                if (book.Editions == null || !book.Editions.Any())
+                {
+                    TempData["Error"] = Constants.EDITIONS_REQUIRED_ERRORS;
+                }
+
                 return View(book);
             }
 
