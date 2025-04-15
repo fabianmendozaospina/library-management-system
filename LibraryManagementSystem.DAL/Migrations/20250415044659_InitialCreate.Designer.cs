@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryManagementSystem.DAL.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    [Migration("20250413144745_InitialCreate")]
+    [Migration("20250415044659_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -73,16 +73,6 @@ namespace LibraryManagementSystem.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookId"));
 
-                    b.Property<string>("ISBN")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("Photo")
                         .IsRequired()
                         .HasMaxLength(300)
@@ -96,10 +86,12 @@ namespace LibraryManagementSystem.DAL.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.HasKey("BookId");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.HasIndex("ISBN")
-                        .IsUnique();
+                    b.HasKey("BookId");
 
                     b.HasIndex("SubjectId");
 
@@ -146,11 +138,18 @@ namespace LibraryManagementSystem.DAL.Migrations
                     b.Property<int>("EditorialId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ISBN")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
                     b.HasKey("EditionId");
+
+                    b.HasIndex("BookId");
 
                     b.HasIndex("EditorialId");
 
-                    b.HasIndex("BookId", "EditorialId", "EditionDate")
+                    b.HasIndex("ISBN")
                         .IsUnique();
 
                     b.ToTable("Editions");
@@ -185,10 +184,12 @@ namespace LibraryManagementSystem.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LoanId"));
 
-                    b.Property<DateTime>("FinalDate")
+                    b.Property<DateTime?>("FinalDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("InitialDate")
+                    b.Property<DateTime?>("InitialDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ReaderId")

@@ -34,7 +34,7 @@
                     @foreach (LoanDetail loanDetail in Model.LoanDetails.OrderBy(r => r.LoanDetailId))
                     {
                         <tr>
-                            <td>@loanDetail?.Book?.Name</td>
+                            <td>@loanDetail?.Book?.Title</td>
                         </tr>
                     }
                 }

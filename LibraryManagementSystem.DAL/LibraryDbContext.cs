@@ -62,16 +62,12 @@ namespace LibraryManagementSystem.DAL
                 .HasIndex(s => s.Name)
                 .IsUnique();
 
-            modelBuilder.Entity<Book>()
-                .HasIndex(b => b.ISBN)
-                .IsUnique();
-
             modelBuilder.Entity<Reader>()
                 .HasIndex(r => r.CoreId)
                 .IsUnique();
 
             modelBuilder.Entity<Edition>()
-                .HasIndex(e => new { e.BookId, e.EditorialId, e.EditionDate })
+                .HasIndex(e => e.ISBN)
                 .IsUnique();
 
             modelBuilder.Entity<Editorial>()
@@ -101,18 +97,18 @@ namespace LibraryManagementSystem.DAL
                       .Property(a => a.Biography)
                       .HasMaxLength(500);
 
+            modelBuilder.Entity<Edition>()
+                      .Property(e => e.ISBN)
+                      .HasMaxLength(13)
+                      .IsRequired();
+
             modelBuilder.Entity<Subject>()
                       .Property(s => s.Name)
                       .HasMaxLength(30)
                       .IsRequired();
 
             modelBuilder.Entity<Book>()
-                      .Property(b => b.ISBN)
-                      .HasMaxLength(13)
-                      .IsRequired();
-
-            modelBuilder.Entity<Book>()
-                      .Property(b => b.Name)
+                      .Property(b => b.Title)
                       .HasMaxLength(50)
                       .IsRequired();
 

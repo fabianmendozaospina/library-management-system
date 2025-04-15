@@ -9,14 +9,14 @@
 
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">@Model.Name</h4>
+        <h4 class="card-title">@Model.Title</h4>
 
         <dl class="row">
             <dt class="col-sm-4">Id:</dt>
             <dd class="col-sm-8">@Model.BookId</dd>
 
-            <dt class="col-sm-4">ISBN:</dt>
-            <dd class="col-sm-8">@Model.ISBN</dd>
+            <dt class="col-sm-4">Author(s):</dt>
+            <dd class="col-sm-8">@Model.Authors</dd>
 
             <dt class="col-sm-4">Subject:</dt>
             <dd class="col-sm-8">@Model?.Subject?.Name</dd>
@@ -28,6 +28,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>ISBN</th>
                     <th>Editorial</th>
                     <th>Edition Date</th>
                     <th>Actions</th>
@@ -39,6 +40,7 @@
                     @foreach (Edition edition in Model.Editions.OrderBy(r => r.EditionId))
                     {
                         <tr>
+                            <td>@edition?.ISBN</td>
                             <td>@edition?.Editorial?.Name</td>
                             <td>@edition?.EditionDate</td>
                             <td>

@@ -11,12 +11,16 @@ namespace LibraryManagementSystem.Controllers
     {
         private readonly BookService _bookService;
         private readonly SubjectService _subjectService;
+        private readonly EditorialService _editorialService;
 
-        public BookController(BookService bookService, SubjectService subjectService)
+        public BookController(BookService bookService, SubjectService subjectService, EditorialService editorialService)
         {
             _bookService = bookService;
             _subjectService = subjectService;
+            _editorialService = editorialService;
         }
+
+        #region CRUD
 
         public async Task<IActionResult> Index()
         {
@@ -146,7 +150,22 @@ namespace LibraryManagementSystem.Controllers
         {
             List<Subject> subjets = await _subjectService.GetAllSubjects();
             ViewBag.Subjects = subjets.Select(s => new { s.SubjectId, s.Name }).ToList();
-            ViewBag.Editorials = new List<Editorial>() { new Editorial() { EditorialId = 1, Name = "Editorial Temporal1" }, new Editorial() { EditorialId = 2, Name = "Editorial Temporal2" } };
+
+            List<Editorial> editorials = await _editorialService.GetAllEditorials();
+            ViewBag.Editorials = editorials.Select(e => new { e.EditorialId, e.Name }).ToList();
         }
+
+        #endregion CRUD
+
+        #region SEARCH
+
+        //public async Task<IActionResult> Search()
+        //{
+        //    ViewBag.Options = new List<string>() { "Title", "ISBN", "Author", "Editorial", "Edition Number", "Edition Year" };
+
+        //    return View(books);
+        //}
+
+        #endregion SEARCH
     }
 }

@@ -7,64 +7,58 @@ using Microsoft.AspNetCore.Mvc;
 namespace LibraryManagementSystem.Controllers
 {
     [Authorize(Roles = "Librarian")]
-    public class LoanController : Controller
+    public class EditorialController : Controller
     {
-        private readonly LoanService _loanService;
-        private readonly BookService _bookService;
+        private readonly EditorialService _editorialService;
 
-        public LoanController(LoanService loanService, BookService bookService)
+        public EditorialController(EditorialService editorialService)
         {
-            _loanService = loanService;
-            _bookService = bookService;
+            _editorialService = editorialService;
         }
 
         public async Task<IActionResult> Index()
         {
-            List<Loan> loans = await _loanService.GetAllLoans();
+            List<Editorial> editorials = await _editorialService.GetAllEditorials();
 
-            return View(loans);
+            return View(editorials);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            Loan? loan = await _loanService.GetLoanById(id);
+            Editorial? editorial = await _editorialService.GetEditorialById(id);
 
-            if (loan == null)
+            if (editorial == null)
             {
                 return NotFound();
             }
 
-            return View(loan);
+            return View(editorial);
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            await SetViewBag();
-
-            return View(new Loan());
+            return View(new Editorial());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Loan loan)
+        public async Task<IActionResult> Create(Editorial editorial)
         {
-            await SetViewBag();
-
             if (!ModelState.IsValid)
             {
-                return View(loan);
+                return View(editorial);
             }
 
-            ServiceResult result = await _loanService.AddLoan(loan);
+            ServiceResult result = await _editorialService.AddEditorial(editorial);
 
             if (!result.Success)
             {
-                if (result.Field != "") 
+                if (result.Field != "")
                     ModelState.AddModelError(result.Field, result.Message);
                 else
                     TempData["Error"] = result.Message;
 
-                return View(loan);
+                return View(editorial);
             }
 
             return RedirectToAction("Index");
@@ -72,30 +66,26 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            await SetViewBag();
+            Editorial? editorial = await _editorialService.GetEditorialById(id);
 
-            Loan? loan = await _loanService.GetLoanById(id);
-
-            if (loan == null)
+            if (editorial == null)
             {
                 return NotFound();
             }
 
-            return View(loan);
+            return View(editorial);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Loan loan)
+        public async Task<IActionResult> Edit(Editorial editorial)
         {
-            await SetViewBag();
-
             if (!ModelState.IsValid)
             {
-                return View(loan);
+                return View(editorial);
             }
 
-            ServiceResult result = await _loanService.UpdateLoan(loan);
+            ServiceResult result = await _editorialService.UpdateEditorial(editorial);
 
             if (!result.Success)
             {
@@ -104,7 +94,7 @@ namespace LibraryManagementSystem.Controllers
                 else
                     TempData["Error"] = result.Message;
 
-                return View(loan);
+                return View(editorial);
             }
 
             return RedirectToAction("Index");
@@ -112,22 +102,22 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            Loan? loan = await _loanService.GetLoanById(id);
+            Editorial? editorial = await _editorialService.GetEditorialById(id);
 
-            if (loan == null)
+            if (editorial == null)
             {
                 return NotFound();
             }
 
-            return View(loan);
+            return View(editorial);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Loan? loan = await _loanService.GetLoanById(id);
-            ServiceResult result = await _loanService.DeleteLoan(loan);
+            Editorial? editorial = await _editorialService.GetEditorialById(id);
+            ServiceResult result = await _editorialService.DeleteEditorial(editorial);
 
             if (!result.Success)
             {
@@ -136,20 +126,10 @@ namespace LibraryManagementSystem.Controllers
                 else
                     TempData["Error"] = result.Message;
 
-                return View(loan);
+                return View(editorial);
             }
 
             return RedirectToAction("Index");
-        }
-
-        private async Task SetViewBag()
-        {
-            List<Book> books = await _bookService.GetAllBooks();
-            ViewBag.Books = books.Select(b => new { b.BookId, b.Title }).ToList();
-
-            // Temporary Data:
-            List<Reader> readers = new List<Reader>() { new Reader() { ReaderId = 2, FirstName = "Peter", LastName = "Parker"}, new Reader() { ReaderId = 3, FirstName = "Juan", LastName = "Rulfo" } };
-            ViewBag.Readers = readers.Select(b => new { b.ReaderId, b.FullName }).ToList();
         }
     }
 }

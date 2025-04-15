@@ -16,14 +16,16 @@ namespace LibraryManagementSystem.DAL
         public async Task<List<Author>> GetAllAuthors()
         {
             return await _context.Authors
-                .Include(b => b.BookAuthors)
+                .Include(a => a.BookAuthors)
+                    .ThenInclude(ba => ba.Book)
                 .ToListAsync();
         }
 
         public async Task<Author> GetAuthorById(int id)
         {
             return await _context.Authors
-                .Include(b => b.BookAuthors)
+                .Include(a => a.BookAuthors)
+                    .ThenInclude(ba => ba.Book)
                 .SingleOrDefaultAsync(r => r.AuthorId == id);
         }
 

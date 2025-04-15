@@ -12,16 +12,26 @@
     <input type="hidden" asp-for="BookId" />
 
     <div class="mb-3">
-        <label asp-for="Name" class="form-label">Name</label>
-        <input asp-for="Name" class="form-control" maxlength="50" required />
-        <span asp-validation-for="Name" class="text-danger"></span>
+        <label asp-for="Title" class="form-label">Title</label>
+        <input asp-for="Title" class="form-control" maxlength="50" required />
+        <span asp-validation-for="Title" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="ISBN" class="form-label">ISBN</label>
-        <input asp-for="ISBN" class="form-control" maxlength="13" required />
-        <span asp-validation-for="ISBN" class="text-danger"></span>
+        <label class="form-label">Author(s)</label>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Authors))
+        {
+            <p class="form-control" style="background-color: white; height: 37px;" readonly>@Model.Authors</p>
+        }
+        else
+        {
+            <p class="form-control" style="background-color: white; height: 37px;" readonly>
+                <a asp-controller="Author" asp-action="Index">Assign this book to an author</a>
+            </p>
+        }
     </div>
+
 
     <div class="mb-3">
         <label asp-for="SubjectId" class="form-label">Subject</label>
@@ -45,6 +55,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>ISBN</th>
                 <th>Editorial</th>
                 <th>Edition Date</th>
                 <th>Actions</th>
@@ -57,6 +68,10 @@
                 {
                     counter++;
                     <tr>
+                        <td>
+                            <input asp-for="Editions[i].ISBN" class="form-control" maxlength="13" />
+                            <span asp-validation-for="Editions[i].ISBN" class="text-danger"></span>
+                        </td>
                         <td>
                             <select asp-for="Editions[i].EditorialId" class="form-select" asp-items="@(new SelectList(ViewBag.Editorials, "EditorialId", "Name"))">
                                 <option value="">-- Select Editorial --</option>
@@ -114,6 +129,15 @@
 
             var newRow = `<tr>
                 <td>
+                    <input name="Editions[${index}].ISBN" class="form-control"
+                           data-val="true"
+                           data-val-required="ISBN is required"
+                           type="text" maxlength="13" />
+                    <span class="text-danger field-validation-valid"
+                          data-valmsg-for="Editions[${index}].ISBN"
+                          data-valmsg-replace="true"></span>
+                </td>
+                <td>
                     <select name="Editions[${index}].EditorialId" class="form-select"
                             data-val="true"
                             data-val-required="Editorial is required">
@@ -150,6 +174,12 @@
         function reindexEditions() {
             const rows = document.querySelectorAll('#editionsTableBody tr');
             rows.forEach((row, index) => {
+                // ISBN
+                const isbnInput = row.querySelector('input[type="text"][name^="Editions"][name$=".ISBN"]');
+                if (isbnInput) {
+                    isbnInput.name = `Editions[${index}].ISBN`;
+                }
+
                 // EditorialId
                 const select = row.querySelector('select[name^="Editions"][name$=".EditorialId"]');
                 if (select) {
@@ -172,6 +202,12 @@
                 const bookIdInput = row.querySelector('input[type="hidden"][name^="Editions"][name$=".BookId"]');
                 if (bookIdInput) {
                     bookIdInput.name = `Editions[${index}].BookId`;
+                }
+
+                // Span de validación para ISBN
+                const isbnSpan = row.querySelector('span[data-valmsg-for$=".ISBN"]');
+                if (isbnSpan) {
+                    isbnSpan.setAttribute('data-valmsg-for', `Editions[${index}].ISBN`);
                 }
 
                 // Span de validación para EditorialId

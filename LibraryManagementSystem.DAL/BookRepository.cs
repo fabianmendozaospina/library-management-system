@@ -16,24 +16,26 @@ namespace LibraryManagementSystem.DAL
         public async Task<List<Book>> GetAllBooks()
         {
             return await _context.Books
-                .Include(s => s.Subject)
-                .Include(ba => ba.BookAuthors)
-                .Include(e => e.Editions)
+                .Include(b => b.Subject)
+                .Include(b => b.BookAuthors)
+                    .ThenInclude(ba => ba.Author)
+                .Include(b => b.Editions)
                     .ThenInclude(e => e.Editorial)
-                .Include(r => r.Ratings)
-                .Include(ld => ld.LoanDetails)
+                .Include(b => b.Ratings)
+                .Include(b => b.LoanDetails)
                 .ToListAsync();
         }
 
         public async Task<Book> GetBookById(int id)
         {
             return await _context.Books
-                .Include(s => s.Subject)
-                .Include(ba => ba.BookAuthors)
-                .Include(e => e.Editions)
+                .Include(b => b.Subject)
+                .Include(b => b.BookAuthors)
+                    .ThenInclude(ba => ba.Author)
+                .Include(b => b.Editions)
                     .ThenInclude(e => e.Editorial)
-                .Include(r => r.Ratings)
-                .Include(ld => ld.LoanDetails)
+                .Include(b => b.Ratings)
+                .Include(b => b.LoanDetails)
                 .SingleOrDefaultAsync(r => r.BookId == id);
         }
 
@@ -56,8 +58,7 @@ namespace LibraryManagementSystem.DAL
                 throw new Exception(Constants.NOT_FOUND_ERROR);
             }
 
-            existingBook.ISBN = book.ISBN;
-            existingBook.Name = book.Name;
+            existingBook.Title = book.Title;
             existingBook.SubjectId = book.SubjectId;
             existingBook.Synopsis = book.Synopsis;
             existingBook.Photo = book.Photo;

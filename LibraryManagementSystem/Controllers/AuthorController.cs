@@ -3,7 +3,6 @@ using LibraryManagementSystem.Common;
 using LibraryManagementSystem.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -146,7 +145,7 @@ namespace LibraryManagementSystem.Controllers
         private async Task SetViewBag()
         {
             List<Book> books = await _bookService.GetAllBooks();
-            ViewBag.Books = books.Select(b => new { b.BookId, b.Name }).ToList();
+            ViewBag.Books = books.Select(b => new { b.BookId, b.Title }).ToList();
         }
     }
 }

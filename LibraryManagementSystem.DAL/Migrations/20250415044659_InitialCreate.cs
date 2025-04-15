@@ -244,8 +244,7 @@ namespace LibraryManagementSystem.DAL.Migrations
                 {
                     BookId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ISBN = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     SubjectId = table.Column<int>(type: "int", nullable: false),
                     Synopsis = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Photo = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false)
@@ -294,6 +293,7 @@ namespace LibraryManagementSystem.DAL.Migrations
                     EditionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BookId = table.Column<int>(type: "int", nullable: false),
+                    ISBN = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
                     EditorialId = table.Column<int>(type: "int", nullable: false),
                     EditionDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -418,26 +418,25 @@ namespace LibraryManagementSystem.DAL.Migrations
                 column: "BookId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Books_ISBN",
-                table: "Books",
-                column: "ISBN",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Books_SubjectId",
                 table: "Books",
                 column: "SubjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Editions_BookId_EditorialId_EditionDate",
+                name: "IX_Editions_BookId",
                 table: "Editions",
-                columns: new[] { "BookId", "EditorialId", "EditionDate" },
-                unique: true);
+                column: "BookId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Editions_EditorialId",
                 table: "Editions",
                 column: "EditorialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Editions_ISBN",
+                table: "Editions",
+                column: "ISBN",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Editorials_Name",

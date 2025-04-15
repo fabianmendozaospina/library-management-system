@@ -9,15 +9,9 @@
 
 <form asp-action="Create" method="post">
     <div class="mb-3">
-        <label asp-for="Name" class="form-label">Name</label>
-        <input asp-for="Name" class="form-control" maxlength="50" required />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="ISBN" class="form-label">ISBN</label>
-        <input asp-for="ISBN" class="form-control" maxlength="13" required />
-        <span asp-validation-for="ISBN" class="text-danger"></span>
+        <label asp-for="Title" class="form-label">Title</label>
+        <input asp-for="Title" class="form-control" maxlength="50" required />
+        <span asp-validation-for="Title" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
@@ -42,6 +36,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>ISBN</th>
                 <th>Editorial</th>
                 <th>Edition Date</th>
                 <th>Actions</th>
@@ -53,6 +48,10 @@
                 for (int i = 0; i < Model.Editions.Count; i++)
                 {
                     <tr>
+                        <td>
+                            <input asp-for="Editions[i].ISBN" class="form-control" type="text" maxlength="13" />
+                            <span asp-validation-for="Editions[i].ISBN" class="text-danger"></span>
+                        </td>
                         <td>
                             <select asp-for="Editions[i].EditorialId" class="form-select" asp-items="@(new SelectList(ViewBag.Editorials, "EditorialId", "Name"))">
                                 <option value="">-- Select Editorial --</option>
@@ -93,6 +92,15 @@
         function addEdition() {
             var index = document.querySelectorAll('#editionsTableBody tr').length;
             var newRow = `<tr>
+                <td>
+                    <input name="Editions[${index}].ISBN" class="form-control"
+                           data-val="true"
+                           data-val-required="ISBN is required"
+                           type="text" maxlength="13" />
+                    <span class="text-danger field-validation-valid"
+                          data-valmsg-for="Editions[${index}].ISBN"
+                          data-valmsg-replace="true"></span>
+                </td>
                 <td>
                     <select name="Editions[${index}].EditorialId" class="form-select"
                             data-val="true"

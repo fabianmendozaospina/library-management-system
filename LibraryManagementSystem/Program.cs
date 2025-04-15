@@ -22,7 +22,6 @@ namespace LibraryManagementSystem
             // Register DAL and BLL services.
             builder.Services.AddScoped<AuthorRepository>();
             builder.Services.AddScoped<BookRepository>();
-            builder.Services.AddScoped<EditionRepository>();
             builder.Services.AddScoped<EditorialRepository>();
             builder.Services.AddScoped<LoanRepository>();
             builder.Services.AddScoped<RatingRepository>();
@@ -30,7 +29,6 @@ namespace LibraryManagementSystem
 
             builder.Services.AddScoped<AuthorService>();
             builder.Services.AddScoped<BookService>();
-            builder.Services.AddScoped<EditionService>();
             builder.Services.AddScoped<EditorialService>();
             builder.Services.AddScoped<LoanService>();
             builder.Services.AddScoped<RatingService>();

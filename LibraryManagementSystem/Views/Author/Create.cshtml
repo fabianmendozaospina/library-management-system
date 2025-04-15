@@ -58,7 +58,7 @@
                         {
                             <tr>
                                 <td>
-                                    <select asp-for="BookAuthors[i].BookId" class="form-select" asp-items="@(new SelectList(ViewBag.Books, "BookId", "Name"))">
+                                    <select asp-for="BookAuthors[i].BookId" class="form-select" asp-items="@(new SelectList(ViewBag.Books, "BookId", "Title"))">
                                         <option value="">-- Select Book --</option>
                                     </select>
                                     <span asp-validation-for="BookAuthors[i].BookId" class="text-danger"></span>
@@ -87,7 +87,7 @@
             <script>
                 var books = @Html.Raw(Json.Serialize(ViewBag.Books));
                 var booksOptions = `<option value=''>-- Select Book --</option>` + books.map(e =>
-                    `<option value="${e.bookId}">${e.name}</option>`
+                    `<option value="${e.bookId}">${e.title}</option>`
                 ).join('');
 
                 function addBook() {

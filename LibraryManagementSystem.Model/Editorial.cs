@@ -4,7 +4,7 @@
     {
         public int EditorialId { get; set; }
         public string Name { get; set; }
-        public ICollection<Edition> Editions { get; set; }
+        public ICollection<Edition>? Editions { get; set; }
 
     }
 }

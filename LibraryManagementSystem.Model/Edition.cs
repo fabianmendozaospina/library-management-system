@@ -6,6 +6,7 @@ namespace LibraryManagementSystem.Model
     {
         public int EditionId { get; set; }
         public int BookId {  get; set; }
+        public string ISBN { get; set; }
         public int EditorialId { get; set; }
         public DateTime EditionDate { get; set; }
         public Book? Book { get; set; }
