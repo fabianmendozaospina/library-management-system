@@ -12,12 +12,12 @@ namespace LibraryManagementSystem.Controllers
     public class ReportsController : Controller
     {
         private readonly ReportsService _reportsService;
-        private readonly BookService _bookService;
+        private readonly ReaderService _readerService;
 
-        public ReportsController(ReportsService reportsService, BookService bookService)
+        public ReportsController(ReportsService reportsService, ReaderService readerService)
         {
             _reportsService = reportsService;
-            _bookService = bookService;
+            _readerService = readerService;
         }
 
         public IActionResult LoansPerReader()
@@ -42,8 +42,10 @@ namespace LibraryManagementSystem.Controllers
             }
 
             List<LoansPerReaderResultDTO> resultDTO = await _reportsService.LoansPerReader(model.ReaderFullName, model.Email);
-            model.Results = resultDTO.Select(dto => new LoansPerReaderResultViewModel
+
+            model.Results = resultDTO.Count == 0 ? null : resultDTO.Select(dto => new LoansPerReaderResultViewModel
             {
+                ReaderId = dto.ReaderId,
                 ReaderFullName = dto.ReaderFullName,
                 Email = dto.Email,
                 Age = dto.Age,
@@ -55,14 +57,14 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            Book? book = await _bookService.GetBookById(id);
+            Reader? reader = await _readerService.GetReaderById(id);
 
-            if (book == null)
+            if (reader == null)
             {
                 return NotFound();
             }
 
-            return View(book);
+            return View(reader);
         }
     }
 }

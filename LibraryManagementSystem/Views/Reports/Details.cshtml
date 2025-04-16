@@ -31,7 +31,7 @@
 
         @if(User.IsInRole("Librarian"))
         {
-            <a asp-action="Edit" asp-route-id="@Model.ReaderId" class="btn btn-primary">Edit</a>
+            <a asp-action="Edit" asp-controller="Reader" asp-route-id="@Model.ReaderId" class="btn btn-primary">Edit</a>
         }
         <a asp-action="LoansPerReader" class="btn btn-secondary">Back to List</a>
     </div>
