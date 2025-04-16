@@ -35,6 +35,7 @@
                         <th>Book Id</th>
                         <th>Title</th>
                         <th>Author(s)</th>
+                        <th>Available</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -47,6 +48,7 @@
                                 <td>@book.BookId</td>
                                 <td>@book.Title</td>
                                 <td>@book.Authors</td>
+                                <td>@(book.Available ? "Yes" : "No")</td>
                                 <td>
                                     @if (User.IsInRole("Reader"))
                                     {
