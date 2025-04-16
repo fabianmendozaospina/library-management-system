@@ -85,5 +85,33 @@ namespace LibraryManagementSystem.Controllers {
 
             return RedirectToAction("Index");
         }
+
+        public async Task<IActionResult> Delete(int id) {
+            Editorial? editorial = await _editorialService.GetEditorialById(id);
+
+            if (editorial == null) {
+                return NotFound();
+            }
+
+            return View(editorial);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id) {
+            Editorial? editorial = await _editorialService.GetEditorialById(id);
+            ServiceResult result = await _editorialService.DeleteEditorial(editorial);
+
+            if (!result.Success) {
+                if (result.Field != "")
+                    ModelState.AddModelError(result.Field, result.Message);
+                else
+                    TempData["Error"] = result.Message;
+
+                return View(editorial);
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
