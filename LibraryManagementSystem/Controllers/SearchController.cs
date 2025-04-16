@@ -2,10 +2,12 @@
 using LibraryManagementSystem.Common.DTOs;
 using LibraryManagementSystem.Model;
 using LibraryManagementSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementSystem.Controllers
 {
+    [Authorize(Roles = "Librarian,Reader")]
     public class SearchController : Controller
     {
         private readonly SearchService _searchService;

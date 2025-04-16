@@ -3,10 +3,12 @@ using LibraryManagementSystem.BLL;
 using LibraryManagementSystem.Common.DTOs;
 using LibraryManagementSystem.Model;
 using LibraryManagementSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementSystem.Controllers
 {
+    [Authorize(Roles = "Librarian,Reader")]
     public class ReportsController : Controller
     {
         private readonly ReportsService _reportsService;
