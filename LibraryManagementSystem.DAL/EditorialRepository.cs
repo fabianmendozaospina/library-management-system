@@ -39,6 +39,7 @@ namespace LibraryManagementSystem.DAL
         {
             Editorial existingEditorial = await _context.Editorials
                 .Include (e => e.Editions)
+                    .ThenInclude(e => e.Book)                
                 .FirstOrDefaultAsync(r => r.EditorialId == editorial.EditorialId);
 
             if (existingEditorial == null)
