@@ -1,6 +1,9 @@
-﻿using LibraryManagementSystem.Common;
+﻿using System.Net;
+using System.Reflection.PortableExecutable;
+using LibraryManagementSystem.Common;
 using LibraryManagementSystem.Model;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibraryManagementSystem.DAL
 {
@@ -27,6 +30,14 @@ namespace LibraryManagementSystem.DAL
                 .Include(r => r.Loans)
                 .Include(r => r.Ratings)
                 .SingleOrDefaultAsync(r => r.ReaderId == id);
+        }
+
+        public async Task<Reader> GetReaderByEmail(string? email)
+        {
+            return await _context.Readers
+                .Include(r => r.Loans)
+                .Include(r => r.Ratings)
+                .FirstOrDefaultAsync(r => r.Email == email);
         }
 
         public async Task<Reader> AddReader(Reader reader)
@@ -65,6 +76,43 @@ namespace LibraryManagementSystem.DAL
                 _context.Readers.Remove(reader);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<(short, string)> GetCurrentReaction(int readerId, int bookId)
+        {
+            Rating rating = await _context.Ratings.FirstOrDefaultAsync(r => r.ReaderId == readerId && r.BookId == bookId);
+
+            return (rating?.Rate??0, rating?.Comment??"");
+        }
+
+        public async Task UpdateRating(Reader reader, int bookId, short rate, string comment)
+        {
+            Rating? rating = await _context.Ratings
+                                .FirstOrDefaultAsync(r => r.BookId == bookId && r.ReaderId == reader.ReaderId);
+
+            if (rating is null)
+            {
+                // New rating.
+                rating = new Rating
+                {
+                    BookId = bookId,
+                    ReaderId = reader.ReaderId,
+                    Rate = rate,
+                    Comment = comment
+                };
+
+                _context.Ratings.Add(rating);
+            }
+            else
+            {
+                // Update existing rating.
+                rating.Rate = rate;
+                rating.Comment = comment;
+
+                _context.Ratings.Update(rating);
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

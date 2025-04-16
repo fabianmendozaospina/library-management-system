@@ -1,6 +1,11 @@
-﻿using LibraryManagementSystem.Common;
+﻿using System.Net;
+using System.Reflection.PortableExecutable;
+using System.Security.Claims;
+using LibraryManagementSystem.Common;
 using LibraryManagementSystem.DAL;
 using LibraryManagementSystem.Model;
+using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibraryManagementSystem.BLL
 {
@@ -28,6 +33,11 @@ namespace LibraryManagementSystem.BLL
             }
 
             return reader;
+        }
+
+        public async Task<Reader?> GetReaderByEmail(string? email)
+        {
+            return await _readerRepository.GetReaderByEmail(email);
         }
 
         public async Task<ServiceResult> AddReader(Reader reader)
@@ -81,6 +91,16 @@ namespace LibraryManagementSystem.BLL
 
                 return ServiceResult.Fail($"{message}", field);
             }
+        }
+
+        public async Task<(short, string)> GetCurrentReaction(int readerId, int bookId)
+        {
+            return await _readerRepository.GetCurrentReaction(readerId, bookId);
+        }
+
+        public async Task UpdateRating(Reader reader, int bookId, short rate, string comment)
+        {
+            await _readerRepository.UpdateRating(reader, bookId, rate, comment);
         }
     }
 }

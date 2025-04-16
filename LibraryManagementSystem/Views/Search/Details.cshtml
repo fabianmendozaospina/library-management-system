@@ -3,6 +3,8 @@
 
 @{
     ViewData["Title"] = "Book Details";
+    int currentRating = ViewBag.CurrentRating ?? 0;
+    string currentComment = ViewBag.CurrentComment ?? "";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -15,14 +17,14 @@
             <dt class="col-sm-4">Id:</dt>
             <dd class="col-sm-8">@Model.BookId</dd>
 
-            <dt class="col-sm-4" style="height: 35px">Author(s):</dt>
+            <dt class="col-sm-4">Author(s):</dt>
             <dd class="col-sm-8">@Model.Authors</dd>
 
             <dt class="col-sm-4">Subject:</dt>
-            <dd class="col-sm-8">@Model?.Subject?.Name</dd>
+            <dd class="col-sm-8">@Model.Subject?.Name</dd>
 
             <dt class="col-sm-4">Synopsis:</dt>
-            <dd class="col-sm-8">@Model?.Synopsis</dd>
+            <dd class="col-sm-8">@Model.Synopsis</dd>
         </dl>
 
         <table class="table table-striped">
@@ -31,38 +33,94 @@
                     <th>ISBN</th>
                     <th>Editorial</th>
                     <th>Edition Date</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @if (Model != null && Model.Editions != null && Model.Editions.Any())
+                @if (Model.Editions?.Any() == true)
                 {
-                    @foreach (Edition edition in Model.Editions.OrderBy(r => r.EditionId))
+                    @foreach (var ed in Model.Editions.OrderBy(e => e.EditionId))
                     {
                         <tr>
-                            <td>@edition?.ISBN</td>
-                            <td>@edition?.Editorial?.Name</td>
-                            <td>@edition?.EditionDate</td>
-                            <td>
-                                Aqui va el Raiting (in construction)
-                                @* <a asp-controller="Edition" asp-action="Details" asp-route-id="@edition.EditionId" class="btn btn-info btn-sm">Details</a> *@
-                            </td>
+                            <td>@ed.ISBN</td>
+                            <td>@ed.Editorial?.Name</td>
+                            <td>@ed.EditionDate.ToShortDateString()</td>
                         </tr>
                     }
                 }
                 else
                 {
                     <tr>
-                        <td colspan="5" class="text-center">There are no registered editions.</td>
+                        <td colspan="3" class="text-center">There are no registered editions.</td>
                     </tr>
                 }
             </tbody>
         </table>
 
-        @if(User.IsInRole("Librarian"))
+        @if (User.IsInRole("Reader"))
         {
-            <a asp-action="Edit" asp-route-id="@Model?.BookId" class="btn btn-primary">Edit</a>
+            <form asp-action="Rate" asp-controller="Search" method="post" class="mt-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="BookId" value="@Model.BookId" />
+                <input type="hidden" id="rating" name="Rate" value="@currentRating" />
+
+                <div class="mb-3">
+                    <label class="form-label">Your Rating</label>
+                    <div id="starContainer">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <img src="~/images/@(i <= currentRating ? "star-filled.png" : "star-empty.png")"
+                                 class="star"
+                                 data-value="@i"
+                                 style="width: 30px; cursor: pointer;" />
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="comment" class="form-label">Your Comment</label>
+                    <textarea id="comment" name="Comment" class="form-control" rows="4" maxlength="500"
+                              placeholder="Write your thoughts about the book...">@currentComment</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success">Save Reaction</button>
+            </form>
         }
-        <a asp-action="Search" class="btn btn-secondary">Back to List</a>
+
+        @if (User.IsInRole("Librarian"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.BookId" class="btn btn-primary mt-3">Edit</a>
+        }
+
+        <a asp-action="Search" class="btn btn-secondary mt-3">Back to List</a>
+        <br />
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="text-danger mt-3">@TempData["Error"]</div>
+        }
+        @if (TempData["Message"] != null)
+        {
+            <div class="text-success mt-3">@TempData["Message"]</div>
+        }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const stars = document.querySelectorAll(".star");
+        const ratingInput = document.getElementById("rating");
+
+        stars.forEach(star => {
+            star.addEventListener("click", function () {
+                const value = parseInt(this.getAttribute("data-value"));
+                ratingInput.value = value;
+
+                stars.forEach((s, i) => {
+                    s.src = i < value
+                        ? "/images/star-filled.png"
+                        : "/images/star-empty.png";
+                });
+            });
+        });
+    </script>
+}
