@@ -42,5 +42,12 @@ namespace LibraryManagementSystem.DAL {
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task DeleteEditorial(Editorial? editorial) {
+            if (editorial != null) {
+                _context.Editorials.Remove(editorial);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
