@@ -53,5 +53,18 @@ namespace LibraryManagementSystem.BLL {
                 return ServiceResult.Fail($"{message}", field);
             }
         }
+
+        public async Task<ServiceResult> DeleteEditorial(Editorial? editorial) {
+            try {
+                await _editorialRepository.DeleteEditorial(editorial);
+
+                return ServiceResult.Ok();
+            }
+            catch (Exception ex) {
+                (string message, string field) = Helper.GetMessage(this.GetType().Name, ex.Message, ex.InnerException);
+
+                return ServiceResult.Fail($"{message}", field);
+            }
+        }
     }
 }
