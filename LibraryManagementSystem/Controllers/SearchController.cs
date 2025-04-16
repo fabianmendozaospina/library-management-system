@@ -36,7 +36,8 @@ namespace LibraryManagementSystem.Controllers
             }
 
             List<SearchResultDTO> resultDTO = await _searchService.SearchBooks(model.Value, model.Option);
-            model.Results = resultDTO.Select(dto => new SearchResultViewModel
+
+            model.Results = resultDTO.Count == 0 ? null : resultDTO.Select(dto => new SearchResultViewModel
             {
                 BookId = dto.BookId,
                 Title = dto.Title,
