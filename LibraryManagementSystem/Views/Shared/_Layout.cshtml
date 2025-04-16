@@ -27,6 +27,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Book" asp-action="Search">Search</a>
                         </li>
+                        @if (User.IsInRole("Reader"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Reader" asp-action="MyAccount">My Account</a>
+                            </li>
+                        }
 
                         @if (User.IsInRole("Librarian"))
                         {
