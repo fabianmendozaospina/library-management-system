@@ -1,13 +1,13 @@
 -- Delete rows from tables in the correct order (dependencies first)
--- DELETE FROM LoanDetails;
--- DELETE FROM Loans;
--- DELETE FROM Ratings;
--- DELETE FROM BookAuthors;
--- DELETE FROM Editions;
--- DELETE FROM Books;
--- DELETE FROM Authors;
--- DELETE FROM Editorials;
--- DELETE FROM Subjects;
+ DELETE FROM LoanDetails;
+ DELETE FROM Loans;
+ DELETE FROM Ratings;
+ DELETE FROM BookAuthors;
+ DELETE FROM Editions;
+ DELETE FROM Books;
+ DELETE FROM Authors;
+ DELETE FROM Editorials;
+ DELETE FROM Subjects;
 
 
 -- Insert Subjects

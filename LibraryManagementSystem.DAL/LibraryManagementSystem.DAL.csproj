@@ -21,4 +21,10 @@
     <ProjectReference Include="..\LibraryManagementSystem.Model\LibraryManagementSystem.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="SqlSeedData\SeedData.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

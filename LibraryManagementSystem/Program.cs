@@ -63,6 +63,8 @@ namespace LibraryManagementSystem
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
+            DbInitializer.SeedDatabase(app.Services);
+
             app.Run();
         }
 
