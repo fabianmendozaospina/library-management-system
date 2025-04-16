@@ -20,8 +20,6 @@ namespace LibraryManagementSystem.Controllers
             _editorialService = editorialService;
         }
 
-        #region CRUD
-
         public async Task<IActionResult> Index()
         {
             List<Book> books = await _bookService.GetAllBooks();
@@ -164,18 +162,5 @@ namespace LibraryManagementSystem.Controllers
             List<Editorial> editorials = await _editorialService.GetAllEditorials();
             ViewBag.Editorials = editorials.Select(e => new { e.EditorialId, e.Name }).ToList();
         }
-
-        #endregion CRUD
-
-        #region SEARCH
-
-        //public async Task<IActionResult> Search()
-        //{
-        //    ViewBag.Options = new List<string>() { "Title", "ISBN", "Author", "Editorial", "Edition Number", "Edition Year" };
-
-        //    return View(books);
-        //}
-
-        #endregion SEARCH
     }
 }

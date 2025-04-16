@@ -1,4 +1,5 @@
 ﻿using LibraryManagementSystem.Common;
+using LibraryManagementSystem.Common.DTOs;
 using LibraryManagementSystem.DAL;
 using LibraryManagementSystem.Model;
 

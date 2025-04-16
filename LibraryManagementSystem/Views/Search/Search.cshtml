@@ -1,55 +1,69 @@
 ﻿@using LibraryManagementSystem.Model
-@model IEnumerable<Book>
+@using LibraryManagementSystem.ViewModels
+@model SearchFormViewModel
 
 @{
-    ViewData["Title"] = "Books";
+    ViewData["Title"] = "Book Search";
 }
 
 <h2>@ViewData["Title"]</h2>
 
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Search" method="post">
+            <div class="mb-3">
+                <label asp-for="Value" class="form-label">Value to Search</label>
+                <input asp-for="Value" class="form-control" maxlength="100" />
+                <span asp-validation-for="Value" class="text-danger"></span>
+            </div>
 
-@if (User.IsInRole("Librarian"))
-{
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Add New Book</a>
-    </p>
-}
+            <div class="mb-3">
+                <label asp-for="Option" class="form-label">Search by</label>
+                <select asp-for="Option" class="form-select" asp-items="@(new SelectList(ViewBag.Options))">
+                    <option value="">-- Select an Option --</option>
+                </select>
+                <span asp-validation-for="Option" class="text-danger"></span>
+            </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Book Id</th>
-            <th>Title</th>
-            <th>Author(s)</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            @foreach (Book book in Model)
-            {
-                <tr>
-                    <td>@book.BookId</td>
-                    <td>@book.Title</td>
-                    <td>@book.Authors</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@book.BookId" class="btn btn-info btn-sm">Details</a>
+            <p>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </p>
 
-                        @if (User.IsInRole("Librarian"))
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Book Id</th>
+                        <th>Title</th>
+                        <th>Author(s)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Results.Any())
+                    {
+                        @foreach (var book in Model.Results)
                         {
-                            <a asp-action="Edit" asp-route-id="@book.BookId" class="btn btn-warning btn-sm">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@book.BookId" class="btn btn-danger btn-sm">Delete</a>
+                            <tr>
+                                <td>@book.BookId</td>
+                                <td>@book.Title</td>
+                                <td>@book.Authors</td>
+                                <td>
+                                    @if (User.IsInRole("Reader"))
+                                    {
+                                        <a asp-action="Details" asp-route-id="@book.BookId" class="btn btn-info btn-sm">Details</a>
+                                    }
+                                </td>
+                            </tr>
                         }
-                    </td>
-                </tr>
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="5" class="text-center">There are no registered books.</td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">There are no books for the search performed.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
