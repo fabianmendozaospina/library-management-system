@@ -1,12 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using LibraryManagementSystem.BLL;
 using LibraryManagementSystem.Common.DTOs;
 using LibraryManagementSystem.Model;
 using LibraryManagementSystem.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -104,7 +102,7 @@ namespace LibraryManagementSystem.Controllers
                 return Forbid();   
 
             await _readerService.UpdateRating(reader, bookId, rate, comment);
-            TempData["Message"] = "Reaction successfully saved!";
+            TempData["Success"] = "Reaction successfully saved!";
 
             return RedirectToAction(nameof(Details), new { id = bookId });
         }
