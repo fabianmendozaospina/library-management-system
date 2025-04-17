@@ -53,3 +53,27 @@ The system uses the following tables:
 ## Usage
 - **Librarians**: Log in to manage books, users, and view reports.
 - **Readers**: Log in to search, borrow, return, and review books.
+
+## What can Librarians do!
+- View and Edit all Loans
+![Loan Edit Page](./ReadmeImages/Loans.png)
+
+- View and Edit all Readers
+![Reader Edit Page](./ReadmeImages/Readers-dashboard.png)
+
+- Serach the Database for any Loan
+![Loan Search Page](./ReadmeImages/SearhLoans.png)
+
+
+## What can Readers Do!
+- Use the My Accont Page
+![My Account Page](./ReadmeImages/MyAccountView.png)
+
+- Search for any Book In the Database
+![Book Search Page](./ReadmeImages/Search.png)
+
+- Have a specific page to look at their Loans
+![Reader Loans Page](./ReadmeImages/MyLoans%20Page.png)
+
+## ER Diagram
+![ER Diagram](./ReadmeImages/erDiagram.png)
