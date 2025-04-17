@@ -1,12 +1,7 @@
-﻿using Azure.Core;
-using LibraryManagementSystem.BLL;
-using LibraryManagementSystem.Model;
-using LibraryManagementSystem.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace LibraryManagementSystem.Controllers
 {
